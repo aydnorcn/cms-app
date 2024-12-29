@@ -1,14 +1,22 @@
 package com.aydnorcn.mis_app.service;
 
+import com.aydnorcn.mis_app.dto.PageResponseDto;
 import com.aydnorcn.mis_app.dto.poll.CreatePollRequest;
 import com.aydnorcn.mis_app.dto.poll.PatchPollRequest;
 import com.aydnorcn.mis_app.entity.Option;
 import com.aydnorcn.mis_app.entity.Poll;
+import com.aydnorcn.mis_app.entity.User;
 import com.aydnorcn.mis_app.exception.ResourceNotFoundException;
+import com.aydnorcn.mis_app.filter.PollFilter;
 import com.aydnorcn.mis_app.repository.PollRepository;
+import com.aydnorcn.mis_app.utils.PollType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,10 +25,24 @@ import java.util.stream.Collectors;
 public class PollService {
 
     private final PollRepository pollRepository;
+    private final UserService userService;
 
     public Poll getPollById(String pollId) {
         return pollRepository.findById(pollId)
                 .orElseThrow(() -> new ResourceNotFoundException("Poll not found with id: " + pollId));
+    }
+
+    public PageResponseDto<Poll> getPolls(PollType type, Integer minOptionCount, Integer maxOptionCount,
+                                          LocalDateTime createdAfter, LocalDateTime createdBefore,
+                                          String createdBy,
+                                          int pageNo, int pageSize) {
+
+        Specification<Poll> specification = PollFilter.filter(type, minOptionCount, maxOptionCount,
+                createdAfter, createdBefore,(createdBy == null ? null : userService.getUserById(createdBy)));
+
+        Page<Poll> page = pollRepository.findAll(specification, PageRequest.of(pageNo, pageSize));
+
+        return new PageResponseDto<>(page);
     }
 
     public Poll createPoll(CreatePollRequest request) {
