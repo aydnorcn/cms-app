@@ -2,10 +2,12 @@ package com.aydnorcn.mis_app.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @Table(name = "user_credentials")
+@NoArgsConstructor
 public class UserCredential {
 
     @Id
@@ -28,7 +30,4 @@ public class UserCredential {
         this.user = user;
     }
 
-    public UserCredential() {
-
-    }
 }
