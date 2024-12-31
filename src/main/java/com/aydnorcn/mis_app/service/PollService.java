@@ -5,7 +5,6 @@ import com.aydnorcn.mis_app.dto.poll.CreatePollRequest;
 import com.aydnorcn.mis_app.dto.poll.PatchPollRequest;
 import com.aydnorcn.mis_app.entity.Option;
 import com.aydnorcn.mis_app.entity.Poll;
-import com.aydnorcn.mis_app.entity.User;
 import com.aydnorcn.mis_app.exception.ResourceNotFoundException;
 import com.aydnorcn.mis_app.filter.PollFilter;
 import com.aydnorcn.mis_app.repository.PollRepository;
@@ -38,7 +37,7 @@ public class PollService {
                                           int pageNo, int pageSize) {
 
         Specification<Poll> specification = PollFilter.filter(type, minOptionCount, maxOptionCount,
-                createdAfter, createdBefore,(createdBy == null ? null : userService.getUserById(createdBy)));
+                createdAfter, createdBefore, (createdBy == null ? null : userService.getUserById(createdBy)));
 
         Page<Poll> page = pollRepository.findAll(specification, PageRequest.of(pageNo, pageSize));
 

@@ -32,6 +32,8 @@ public class Poll {
     @Enumerated(EnumType.STRING)
     private PollType type;
 
+    private boolean active;
+
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
