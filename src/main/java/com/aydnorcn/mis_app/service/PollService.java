@@ -90,6 +90,7 @@ public class PollService {
 
         poll.getOptions().clear();
         poll.getOptions().addAll(options);
+        poll.setMaxVoteCount(request.getMaxVoteCount());
     }
 
     private void patchPollFields(Poll poll, PatchPollRequest request) {

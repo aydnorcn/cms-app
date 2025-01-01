@@ -4,14 +4,17 @@ import com.aydnorcn.mis_app.dto.PageResponseDto;
 import com.aydnorcn.mis_app.dto.vote.VoteRequest;
 import com.aydnorcn.mis_app.entity.Option;
 import com.aydnorcn.mis_app.entity.Vote;
+import com.aydnorcn.mis_app.exception.APIException;
 import com.aydnorcn.mis_app.exception.ResourceNotFoundException;
 import com.aydnorcn.mis_app.filter.VoteFilter;
 import com.aydnorcn.mis_app.repository.VoteRepository;
+import com.aydnorcn.mis_app.utils.PollType;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -51,10 +54,23 @@ public class VoteService {
         Option option = optionService.getOptionById(request.getOptionId());
 
         if (!option.getPoll().isActive()) {
-            throw new ResourceNotFoundException("Poll is not active");
+            throw new APIException(HttpStatus.BAD_REQUEST, "Poll is not active");
             //TODO: New Exception Type
         }
 
+        if (option.getPoll().getType().equals(PollType.SINGLE_CHOICE)) {
+            return createSingleChoiceVote(option);
+        } else {
+            return createMultipleChoiceVote(option);
+        }
+    }
+
+    public void deleteVote(String voteId) {
+        Vote vote = getVoteById(voteId);
+        voteRepository.delete(vote);
+    }
+
+    private Vote createSingleChoiceVote(Option option) {
         Optional<Vote> optionalVote = voteRepository.findByOptionPoll(option.getPoll());
 
         optionalVote.ifPresent(voteRepository::delete);
@@ -66,9 +82,18 @@ public class VoteService {
         return voteRepository.save(vote);
     }
 
-    public void deleteVote(String voteId) {
-        Vote vote = getVoteById(voteId);
-        voteRepository.delete(vote);
+    private Vote createMultipleChoiceVote(Option option) {
+        int count = voteRepository.countByOptionPollAndUser(option.getPoll(), userContextService.getCurrentAuthenticatedUser());
+
+        if (count >= option.getPoll().getMaxVoteCount()) {
+            throw new ResourceNotFoundException("User has already voted maximum times");
+        }
+
+        Vote vote = new Vote();
+        vote.setUser(userContextService.getCurrentAuthenticatedUser());
+        vote.setOption(option);
+
+        return voteRepository.save(vote);
     }
 
 

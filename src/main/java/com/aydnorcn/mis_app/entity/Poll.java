@@ -33,6 +33,7 @@ public class Poll {
     private PollType type;
 
     private boolean active;
+    private int maxVoteCount;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
