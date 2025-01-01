@@ -9,6 +9,10 @@ import java.time.LocalDateTime;
 
 public class PollFilter {
 
+    private PollFilter(){
+        throw new IllegalStateException("Utility class");
+    }
+
     public static Specification<Poll> filter(PollType type, Integer minOptionCount, Integer maxOptionCount,
                                              LocalDateTime createdAfter, LocalDateTime createdBefore,
                                              User createdBy) {

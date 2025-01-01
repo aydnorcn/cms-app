@@ -8,16 +8,14 @@ import com.aydnorcn.mis_app.entity.Poll;
 import com.aydnorcn.mis_app.exception.ResourceNotFoundException;
 import com.aydnorcn.mis_app.filter.PollFilter;
 import com.aydnorcn.mis_app.repository.PollRepository;
-import com.aydnorcn.mis_app.utils.PollType;
+import com.aydnorcn.mis_app.utils.params.PollParams;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,15 +29,12 @@ public class PollService {
                 .orElseThrow(() -> new ResourceNotFoundException("Poll not found with id: " + pollId));
     }
 
-    public PageResponseDto<Poll> getPolls(PollType type, Integer minOptionCount, Integer maxOptionCount,
-                                          LocalDateTime createdAfter, LocalDateTime createdBefore,
-                                          String createdBy,
-                                          int pageNo, int pageSize) {
+    public PageResponseDto<Poll> getPolls(PollParams params) {
 
-        Specification<Poll> specification = PollFilter.filter(type, minOptionCount, maxOptionCount,
-                createdAfter, createdBefore, (createdBy == null ? null : userService.getUserById(createdBy)));
+        Specification<Poll> specification = PollFilter.filter(params.getType(), params.getMinOptionCount(), params.getMaxOptionCount(),
+                params.getCreatedAfter(), params.getCreatedBefore(), (params.getCreatedBy() == null ? null : userService.getUserById(params.getCreatedBy())));
 
-        Page<Poll> page = pollRepository.findAll(specification, PageRequest.of(pageNo, pageSize));
+        Page<Poll> page = pollRepository.findAll(specification, PageRequest.of(params.getPageNo(), params.getPageSize()));
 
         return new PageResponseDto<>(page);
     }
@@ -86,7 +81,7 @@ public class PollService {
                     newOption.setPoll(poll);
                     return newOption;
                 })
-                .collect(Collectors.toList());
+                .toList();
 
         poll.getOptions().clear();
         poll.getOptions().addAll(options);
@@ -105,7 +100,7 @@ public class PollService {
                         newOption.setPoll(poll);
                         return newOption;
                     })
-                    .collect(Collectors.toList());
+                    .toList();
 
             poll.setOptions(options);
         }

@@ -5,7 +5,6 @@ import com.aydnorcn.mis_app.dto.vote.VoteRequest;
 import com.aydnorcn.mis_app.dto.vote.VoteResponse;
 import com.aydnorcn.mis_app.entity.Vote;
 import com.aydnorcn.mis_app.service.VoteService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
