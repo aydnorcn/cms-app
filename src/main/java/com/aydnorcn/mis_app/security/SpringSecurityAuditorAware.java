@@ -1,6 +1,5 @@
 package com.aydnorcn.mis_app.security;
 
-import com.aydnorcn.mis_app.CustomUserDetails;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;

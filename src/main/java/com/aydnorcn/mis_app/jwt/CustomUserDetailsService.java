@@ -1,6 +1,6 @@
 package com.aydnorcn.mis_app.jwt;
 
-import com.aydnorcn.mis_app.CustomUserDetails;
+import com.aydnorcn.mis_app.security.CustomUserDetails;
 import com.aydnorcn.mis_app.entity.User;
 import com.aydnorcn.mis_app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

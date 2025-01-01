@@ -1,4 +1,4 @@
-package com.aydnorcn.mis_app;
+package com.aydnorcn.mis_app.security;
 
 import com.aydnorcn.mis_app.entity.User;
 import org.springframework.security.core.GrantedAuthority;
