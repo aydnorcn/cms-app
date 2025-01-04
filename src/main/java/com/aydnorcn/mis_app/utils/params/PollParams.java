@@ -15,10 +15,13 @@ public class PollParams {
     private PollType type = null;
     private Integer minOptionCount = null;
     private Integer maxOptionCount = null;
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime createdAfter = null;
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime createdBefore = null;
+    
     private String createdBy = null;
     private int pageNo = 0;
     private int pageSize = 10;
@@ -36,5 +39,9 @@ public class PollParams {
         if (params.containsKey("created-by")) createdBy = (String) params.get("created-by");
         if (params.containsKey("page-no")) pageNo = Integer.parseInt((String) params.get("page-no"));
         if (params.containsKey("page-size")) pageSize = Integer.parseInt((String) params.get("page-size"));
+    }
+
+    public PollParams(){
+
     }
 }
