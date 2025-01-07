@@ -11,6 +11,7 @@ import com.aydnorcn.mis_app.utils.params.EventParams;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -27,11 +28,15 @@ public class EventService {
     }
 
     public PageResponseDto<Event> getEvents(EventParams params) {
-
         var user = (params.getCreatedBy() == null) ? null : userService.getUserById(params.getCreatedBy());
 
         Specification<Event> specification = EventFilter.filter(params.getLocation(), params.getDate(), params.getStartAfter(), params.getEndBefore(), params.getStatus(), user);
-        Page<Event> page = eventRepository.findAll(specification, PageRequest.of(params.getPageNo(), params.getPageSize()));
+
+        Sort sort = params.getSortOrder().equalsIgnoreCase("asc")
+                ? Sort.by(params.getSortBy()).ascending()
+                : Sort.by(params.getSortBy()).descending();
+
+        Page<Event> page = eventRepository.findAll(specification, PageRequest.of(params.getPageNo(), params.getPageSize(), sort));
 
         return new PageResponseDto<>(page);
     }

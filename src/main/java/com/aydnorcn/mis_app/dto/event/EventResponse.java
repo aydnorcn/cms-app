@@ -43,7 +43,7 @@ public class EventResponse {
         this.startTime = event.getStartTime();
         this.endTime = event.getEndTime();
         this.status = event.getStatus();
-        this.createdBy = event.getCreatedBy().getId();
+        this.createdBy = event.getCreatedBy();
         this.createdAt = event.getCreatedAt();
         this.updatedAt = event.getUpdatedAt();
     }
