@@ -6,6 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,6 +18,7 @@ import java.time.LocalTime;
 @Data
 @Table(name = "events")
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class Event {
 
     @Id
@@ -33,13 +37,13 @@ public class Event {
     @Enumerated(EnumType.STRING)
     private EventStatus status;
 
-    @ManyToOne
-    @JoinColumn(name = "created_by_id")
-    private User createdBy;
+    @CreatedBy
+    @Column(nullable = false, updatable = false)
+    private String createdBy;
 
-    @ManyToOne
-    @JoinColumn(name = "updated_by_id")
-    private User updatedBy;
+    @LastModifiedBy
+    @Column(insertable = false)
+    private String updatedBy;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false, nullable = false)
