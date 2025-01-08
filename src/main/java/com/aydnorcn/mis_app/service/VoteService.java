@@ -9,10 +9,12 @@ import com.aydnorcn.mis_app.exception.ResourceNotFoundException;
 import com.aydnorcn.mis_app.filter.VoteFilter;
 import com.aydnorcn.mis_app.repository.VoteRepository;
 import com.aydnorcn.mis_app.utils.PollType;
+import com.aydnorcn.mis_app.utils.params.VoteParams;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -35,16 +37,19 @@ public class VoteService {
                 .orElseThrow(() -> new ResourceNotFoundException("Vote not found with id: " + voteId));
     }
 
-    public PageResponseDto<Vote> getVotes(String userId, String optionId, String pollId,
-                                          LocalDateTime votedAfter, LocalDateTime votedBefore,
-                                          Boolean isActive,
-                                          int pageNo, int pageSize) {
-        var user = (userId == null) ? null : userService.getUserById(userId);
-        var option = (optionId == null) ? null : optionService.getOptionById(optionId);
-        var poll = (pollId == null) ? null : pollService.getPollById(pollId);
+    public PageResponseDto<Vote> getVotes(VoteParams params) {
+        var user = (params.getUserId() == null) ? null : userService.getUserById(params.getUserId());
+        var option = (params.getOptionId() == null) ? null : optionService.getOptionById(params.getOptionId());
+        var poll = (params.getPollId() == null) ? null : pollService.getPollById(params.getPollId());
 
-        Specification<Vote> specification = VoteFilter.filter(user, option, poll, votedAfter, votedBefore, isActive);
-        Page<Vote> page = voteRepository.findAll(specification, PageRequest.of(pageNo, pageSize));
+        Specification<Vote> specification = VoteFilter.filter(user, option, poll,
+                params.getCreatedAfter(), params.getCreatedBefore(), params.getIsActive());
+
+        Sort sort = params.getSortOrder().equalsIgnoreCase("asc")
+                ? Sort.by(params.getSortBy()).ascending()
+                : Sort.by(params.getSortBy()).descending();
+
+        Page<Vote> page = voteRepository.findAll(specification, PageRequest.of(params.getPageNo(), params.getPageSize(), sort));
 
         return new PageResponseDto<>(page);
     }
@@ -55,7 +60,6 @@ public class VoteService {
 
         if (!option.getPoll().isActive()) {
             throw new APIException(HttpStatus.BAD_REQUEST, "Poll is not active");
-            //TODO: New Exception Type
         }
 
         if (option.getPoll().getType().equals(PollType.SINGLE_CHOICE)) {
