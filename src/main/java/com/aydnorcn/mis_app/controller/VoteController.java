@@ -18,7 +18,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/votes")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ROLE_USER')")
 public class VoteController {
 
     private final VoteService voteService;
@@ -34,7 +33,9 @@ public class VoteController {
         PageResponseDto<Vote> votes = voteService.getVotes(params);
         List<VoteResponse> voteResponses = votes.getContent().stream().map(VoteResponse::new).toList();
 
-        return ResponseEntity.ok(new PageResponseDto<>(voteResponses, votes.getPageNo(), votes.getPageSize(), votes.getTotalElements(), votes.getTotalPages()));
+        return ResponseEntity.ok(
+                new PageResponseDto<>(voteResponses, votes.getPageNo(), votes.getPageSize(), votes.getTotalElements(), votes.getTotalPages())
+        );
     }
 
     @PostMapping
@@ -43,7 +44,7 @@ public class VoteController {
     }
 
     @DeleteMapping("/{voteId}")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or @voteService.isAuthenticatedUserOwnerOfVote(#voteId)")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('MODERATOR') or @voteService.isAuthenticatedUserOwnerOfVote(#voteId)")
     public ResponseEntity<Void> deleteVote(@PathVariable String voteId) {
         voteService.deleteVote(voteId);
         return ResponseEntity.noContent().build();

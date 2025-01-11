@@ -19,25 +19,24 @@ public class OptionController {
     private final OptionService optionService;
 
     @GetMapping("/{optionId}")
-    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Option> getOptionById(@PathVariable String optionId) {
         return ResponseEntity.ok(optionService.getOptionById(optionId));
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_MODERATOR')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('ORGANIZATOR')")
     public ResponseEntity<Option> createOption(@Validated @RequestBody CreateOptionRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(optionService.createOption(request));
     }
 
     @PutMapping("/{optionId}")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_MODERATOR')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('ORGANIZATOR')")
     public ResponseEntity<Option> updateOption(@PathVariable String optionId, @Validated @RequestBody UpdateOptionRequest request) {
         return ResponseEntity.ok(optionService.updateOption(optionId, request));
     }
 
     @DeleteMapping("/{optionId}")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_MODERATOR')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('ORGANIZATOR')")
     public ResponseEntity<Void> deleteOption(@PathVariable String optionId) {
         optionService.deleteOption(optionId);
         return ResponseEntity.noContent().build();

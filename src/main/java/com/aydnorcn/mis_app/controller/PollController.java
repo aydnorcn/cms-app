@@ -10,6 +10,7 @@ import com.aydnorcn.mis_app.service.PollService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,25 +35,31 @@ public class PollController {
         PageResponseDto<Poll> polls = pollService.getPolls(params);
         List<PollResponse> pollResponses = polls.getContent().stream().map(PollResponse::new).toList();
 
-        return ResponseEntity.ok(new PageResponseDto<>(pollResponses, polls.getPageNo(), polls.getPageSize(), polls.getTotalElements(), polls.getTotalPages()));
+        return ResponseEntity.ok(
+                new PageResponseDto<>(pollResponses, polls.getPageNo(), polls.getPageSize(), polls.getTotalElements(), polls.getTotalPages())
+        );
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('ORGANIZATOR')")
     public ResponseEntity<PollResponse> createPoll(@Validated @RequestBody CreatePollRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(new PollResponse(pollService.createPoll(request)));
     }
 
     @PutMapping("/{pollId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('ORGANIZATOR')")
     public ResponseEntity<PollResponse> updatePoll(@PathVariable String pollId, @Validated @RequestBody CreatePollRequest request) {
         return ResponseEntity.ok(new PollResponse(pollService.updatePoll(pollId, request)));
     }
 
     @PatchMapping("/{pollId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('ORGANIZATOR')")
     public ResponseEntity<PollResponse> patchPoll(@PathVariable String pollId, @RequestBody PatchPollRequest request) {
         return ResponseEntity.ok(new PollResponse(pollService.patchPoll(pollId, request)));
     }
 
     @DeleteMapping("/{pollId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('ORGANIZATOR')")
     public ResponseEntity<Void> deletePoll(@PathVariable String pollId) {
         pollService.deletePoll(pollId);
         return ResponseEntity.noContent().build();
