@@ -1,6 +1,6 @@
 package com.aydnorcn.mis_app.dto.poll;
 
-import com.aydnorcn.mis_app.entity.Option;
+import com.aydnorcn.mis_app.dto.option.OptionResponse;
 import com.aydnorcn.mis_app.entity.Poll;
 import com.aydnorcn.mis_app.utils.PollType;
 import lombok.Getter;
@@ -31,18 +31,5 @@ public class PollResponse {
         this.updatedAt = poll.getUpdatedAt();
         this.createdBy = poll.getCreatedBy();
         this.updatedBy = poll.getUpdatedBy();
-    }
-
-    @Getter
-    private static class OptionResponse {
-        private final String id;
-        private final String text;
-        private final int voteCount;
-
-        public OptionResponse(Option option) {
-            this.id = option.getId();
-            this.text = option.getText();
-            this.voteCount = option.getVotes().size();
-        }
     }
 }

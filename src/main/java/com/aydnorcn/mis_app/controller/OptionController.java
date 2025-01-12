@@ -1,8 +1,8 @@
 package com.aydnorcn.mis_app.controller;
 
 import com.aydnorcn.mis_app.dto.option.CreateOptionRequest;
+import com.aydnorcn.mis_app.dto.option.OptionResponse;
 import com.aydnorcn.mis_app.dto.option.UpdateOptionRequest;
-import com.aydnorcn.mis_app.entity.Option;
 import com.aydnorcn.mis_app.service.OptionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,25 +19,25 @@ public class OptionController {
     private final OptionService optionService;
 
     @GetMapping("/{optionId}")
-    public ResponseEntity<Option> getOptionById(@PathVariable String optionId) {
-        return ResponseEntity.ok(optionService.getOptionById(optionId));
+    public ResponseEntity<OptionResponse> getOptionById(@PathVariable String optionId) {
+        return ResponseEntity.ok(new OptionResponse(optionService.getOptionById(optionId)));
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('ORGANIZATOR')")
-    public ResponseEntity<Option> createOption(@Validated @RequestBody CreateOptionRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(optionService.createOption(request));
+    public ResponseEntity<OptionResponse> createOption(@Validated @RequestBody CreateOptionRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(new OptionResponse(optionService.createOption(request)));
     }
 
     @PutMapping("/{optionId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('ORGANIZATOR')")
-    public ResponseEntity<Option> updateOption(@PathVariable String optionId, @Validated @RequestBody UpdateOptionRequest request) {
-        return ResponseEntity.ok(optionService.updateOption(optionId, request));
+    public ResponseEntity<OptionResponse> updateOption(@PathVariable String optionId, @Validated @RequestBody UpdateOptionRequest request) {
+        return ResponseEntity.ok(new OptionResponse(optionService.updateOption(optionId, request)));
     }
 
     @DeleteMapping("/{optionId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('ORGANIZATOR')")
-    public ResponseEntity<Void> deleteOption(@PathVariable String optionId) {
+    public ResponseEntity<OptionResponse> deleteOption(@PathVariable String optionId) {
         optionService.deleteOption(optionId);
         return ResponseEntity.noContent().build();
     }
