@@ -2,6 +2,7 @@ package com.aydnorcn.mis_app.dto.event;
 
 import com.aydnorcn.mis_app.utils.EventStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
@@ -11,13 +12,13 @@ import java.time.LocalTime;
 @Getter
 public class CreateEventRequest {
 
-    @NotNull(message = "Name cannot be null or empty!")
+    @NotBlank(message = "Name cannot be null or empty!")
     private String name;
 
-    @NotNull(message = "Description cannot be null or empty!")
+    @NotBlank(message = "Description cannot be null or empty!")
     private String description;
 
-    @NotNull(message = "Location cannot be null or empty!")
+    @NotBlank(message = "Location cannot be null or empty!")
     private String location;
 
     @NotNull(message = "Date cannot be null or empty!")

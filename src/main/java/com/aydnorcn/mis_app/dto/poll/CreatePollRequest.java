@@ -2,6 +2,7 @@ package com.aydnorcn.mis_app.dto.poll;
 
 import com.aydnorcn.mis_app.utils.PollType;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
@@ -10,9 +11,9 @@ import java.util.List;
 @Getter
 public class CreatePollRequest {
 
-    @NotNull(message = "Title cannot be null")
+    @NotBlank(message = "Title cannot be null")
     private final String title;
-    @NotNull(message = "Description cannot be null")
+    @NotBlank(message = "Description cannot be null")
     private final String description;
     @NotNull(message = "Type cannot be null")
     private final PollType type;
