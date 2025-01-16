@@ -1,10 +1,12 @@
 package com.aydnorcn.mis_app.utils.params;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Map;
 
 @Getter
+@Setter
 public class PaginationParams {
 
     private int pageNo = 0;
