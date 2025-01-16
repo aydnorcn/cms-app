@@ -1,8 +1,10 @@
 package com.aydnorcn.mis_app.exception;
 
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -41,7 +43,7 @@ public class GlobalExceptionHandler {
         return createResponseEntity(HttpStatus.CONFLICT, exception.getMessage());
     }
 
-    @ExceptionHandler(NoAuthorityException.class)
+    @ExceptionHandler({NoAuthorityException.class, AuthorizationDeniedException.class})
     public ResponseEntity<ErrorMessage> handleNoAuthorityException() {
         return createResponseEntity(HttpStatus.UNAUTHORIZED, "You are not authorized to perform this action!");
     }
@@ -59,6 +61,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RateLimitExceedException.class)
     public ResponseEntity<ErrorMessage> handleRateLimitExceedException(RateLimitExceedException exception) {
         return createResponseEntity(HttpStatus.TOO_MANY_REQUESTS, exception.getMessage());
+    }
+
+    @ExceptionHandler(InvalidDataAccessApiUsageException.class)
+    public ResponseEntity<ErrorMessage> handleInvalidDataAccessApiUsageException(InvalidDataAccessApiUsageException exception) {
+        return createResponseEntity(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
