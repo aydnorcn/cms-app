@@ -15,4 +15,11 @@ public class RegisterRequest {
     private String firstName;
     @NotBlank(message = "Lastname cannot be null or empty!")
     private String lastName;
+
+    public RegisterRequest(String email, String password, String firstName, String lastName) {
+        this.email = email;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
 }
