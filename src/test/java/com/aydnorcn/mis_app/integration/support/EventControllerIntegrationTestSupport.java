@@ -1,4 +1,4 @@
-package com.aydnorcn.mis_app.integration;
+package com.aydnorcn.mis_app.integration.support;
 
 import com.aydnorcn.mis_app.entity.Event;
 import com.aydnorcn.mis_app.jwt.JwtTokenProvider;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @AutoConfigureMockMvc()
-abstract class EventControllerIntegrationTestSupport {
+public abstract class EventControllerIntegrationTestSupport {
 
     @Autowired
     protected MockMvc mockMvc;

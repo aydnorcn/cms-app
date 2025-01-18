@@ -27,5 +27,7 @@ public class MessageConstants {
     public static final String ROLE_NAME_NOT_BLANK = "Role name cannot be empty or blank!";
     public static final String ROLE_NAME_LENGTH = "Name length must be 3-15";
     public static final String OPTION_ID_NOT_BLANK = "Option id cannot be null or blank";
+    public static final String AUTHENTICATION_REQUIRED = "Authentication required!";
+    public static final String EVENT_NOT_FOUND = "Event not found!";
 
 }

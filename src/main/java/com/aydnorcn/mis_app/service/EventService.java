@@ -7,6 +7,7 @@ import com.aydnorcn.mis_app.entity.Event;
 import com.aydnorcn.mis_app.exception.ResourceNotFoundException;
 import com.aydnorcn.mis_app.filter.EventFilter;
 import com.aydnorcn.mis_app.repository.EventRepository;
+import com.aydnorcn.mis_app.utils.MessageConstants;
 import com.aydnorcn.mis_app.utils.params.EventParams;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,7 +25,7 @@ public class EventService {
 
     public Event getEventById(String eventId) {
         return eventRepository.findById(eventId)
-                .orElseThrow(() -> new ResourceNotFoundException("Event not found!"));
+                .orElseThrow(() -> new ResourceNotFoundException(MessageConstants.EVENT_NOT_FOUND));
     }
 
     public PageResponseDto<Event> getEvents(EventParams params) {

@@ -3,7 +3,9 @@ package com.aydnorcn.mis_app.integration;
 import com.aydnorcn.mis_app.dto.event.CreateEventRequest;
 import com.aydnorcn.mis_app.dto.event.PatchEventRequest;
 import com.aydnorcn.mis_app.entity.Event;
+import com.aydnorcn.mis_app.integration.support.EventControllerIntegrationTestSupport;
 import com.aydnorcn.mis_app.utils.EventStatus;
+import com.aydnorcn.mis_app.utils.MessageConstants;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
@@ -15,6 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -35,7 +38,8 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(events.get(0).getId()))
                 .andExpect(jsonPath("$.name").value(events.get(0).getName()))
-                .andExpect(jsonPath("$.description").value(events.get(0).getDescription()));
+                .andExpect(jsonPath("$.description").value(events.get(0).getDescription()))
+                .andDo(print());
     }
 
     @Test
@@ -45,18 +49,21 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                 .perform(MockMvcRequestBuilders.get(API_URL + "/123")
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken()))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value(MessageConstants.EVENT_NOT_FOUND))
+                .andDo(print());
     }
 
     @Test
     @WithAnonymousUser
     void getEvent_ReturnUnauthorized_WhenUserIsNotAuthenticated() throws Exception {
-
         mockMvc
                 .perform(MockMvcRequestBuilders.get(API_URL + events.get(0).getId())
                         .header("Authorization", getToken())
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value(MessageConstants.AUTHENTICATION_REQUIRED))
+                .andDo(print());
     }
 
     @Test
@@ -69,7 +76,8 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].name").value("Test Event4"))
                 .andExpect(jsonPath("$.content[0].description").value("Test Description4"))
-                .andExpect(jsonPath("$.content.size()").value(5));
+                .andExpect(jsonPath("$.content.size()").value(5))
+                .andDo(print());
     }
 
     @Test
@@ -81,15 +89,21 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").isEmpty());
+                .andExpect(jsonPath("$.content").isEmpty())
+                .andExpect(jsonPath("$.totalElements").value(0))
+                .andDo(print());
     }
 
     @Test
+    @WithMockUser
     void getEvents_ReturnsBadRequest_WhenParamsAreInvalid() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get(API_URL)
                         .param("invalidParam", "invalidValue")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("Authorization", getToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalElements").value(5))
+                .andDo(print());
     }
 
     @Test
@@ -113,7 +127,8 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].name").value("Filtered Event123"))
                 .andExpect(jsonPath("$.content[0].description").value("Filtered Description"))
-                .andExpect(jsonPath("$.content.size()").value(1));
+                .andExpect(jsonPath("$.content.size()").value(1))
+                .andDo(print());
     }
 
     @Test
@@ -126,7 +141,8 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .header("Authorization", getToken()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].name").value("Test Event0"))
-                .andExpect(jsonPath("$.content[4].name").value("Test Event4"));
+                .andExpect(jsonPath("$.content[4].name").value("Test Event4"))
+                .andDo(print());
     }
 
     @Test
@@ -141,7 +157,8 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("Test Event"))
-                .andExpect(jsonPath("$.description").value("Test Description"));
+                .andExpect(jsonPath("$.description").value("Test Description"))
+                .andDo(print());
     }
 
     @Test
@@ -155,7 +172,9 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken())
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value(MessageConstants.UNAUTHORIZED_ACTION))
+                .andDo(print());
     }
 
     @Test
@@ -166,8 +185,11 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/events")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", getToken())
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.startTime").value(MessageConstants.START_TIME_NOT_NULL))
+                .andDo(print());
     }
 
     @Test
@@ -182,7 +204,8 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .header("Authorization", getToken()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Updated Event"))
-                .andExpect(jsonPath("$.description").value("Updated Description"));
+                .andExpect(jsonPath("$.description").value("Updated Description"))
+                .andDo(print());
     }
 
     @Test
@@ -195,7 +218,9 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken()))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value(MessageConstants.UNAUTHORIZED_ACTION))
+                .andDo(print());
     }
 
     @Test
@@ -208,7 +233,9 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken()))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.startTime").value(MessageConstants.START_TIME_NOT_NULL))
+                .andDo(print());
     }
 
     @Test
@@ -221,7 +248,9 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken()))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value(MessageConstants.EVENT_NOT_FOUND))
+                .andDo(print());
     }
 
     @Test
@@ -230,7 +259,9 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
         mockMvc.perform(MockMvcRequestBuilders.put(API_URL + "/123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken()))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(MessageConstants.REQUEST_BODY_MISSING))
+                .andDo(print());
     }
 
     @Test
@@ -246,7 +277,8 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                 .andExpect(jsonPath("$.name").value("Patch Name"))
                 .andExpect(jsonPath("$.description").value(events.get(0).getDescription()))
                 .andExpect(jsonPath("$.location").value(events.get(0).getLocation()))
-                .andExpect(jsonPath("$.date").value(events.get(0).getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))));
+                .andExpect(jsonPath("$.date").value(events.get(0).getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))))
+                .andDo(print());
     }
 
     @Test
@@ -258,7 +290,9 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken()))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value(MessageConstants.UNAUTHORIZED_ACTION))
+                .andDo(print());
     }
 
     @Test
@@ -274,7 +308,8 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                 .andExpect(jsonPath("$.name").value(events.get(0).getName()))
                 .andExpect(jsonPath("$.description").value(events.get(0).getDescription()))
                 .andExpect(jsonPath("$.location").value(events.get(0).getLocation()))
-                .andExpect(jsonPath("$.date").value(events.get(0).getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))));
+                .andExpect(jsonPath("$.date").value(events.get(0).getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))))
+                .andDo(print());
     }
 
     @Test
@@ -286,7 +321,9 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken()))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value(MessageConstants.EVENT_NOT_FOUND))
+                .andDo(print());
     }
 
     @Test
@@ -295,7 +332,9 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
         mockMvc.perform(MockMvcRequestBuilders.patch(API_URL + "/123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken()))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(MessageConstants.REQUEST_BODY_MISSING))
+                .andDo(print());
     }
 
     @Test
@@ -312,7 +351,8 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.size()").value(4));
+                .andExpect(jsonPath("$.content.size()").value(4))
+                .andDo(print());
     }
 
     @Test
@@ -321,7 +361,9 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
         mockMvc.perform(MockMvcRequestBuilders.delete(API_URL + "/123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken()))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value(MessageConstants.EVENT_NOT_FOUND))
+                .andDo(print());
     }
 
     @Test
@@ -330,6 +372,8 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
         mockMvc.perform(MockMvcRequestBuilders.delete(API_URL + "/" + events.get(0).getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken()))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value(MessageConstants.UNAUTHORIZED_ACTION))
+                .andDo(print());
     }
 }
