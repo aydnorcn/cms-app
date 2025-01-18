@@ -9,7 +9,9 @@ import com.aydnorcn.mis_app.entity.User;
 import com.aydnorcn.mis_app.entity.UserCredential;
 import com.aydnorcn.mis_app.exception.AlreadyExistsException;
 import com.aydnorcn.mis_app.jwt.JwtTokenProvider;
+import com.aydnorcn.mis_app.repository.RoleRepository;
 import com.aydnorcn.mis_app.repository.UserRepository;
+import com.aydnorcn.mis_app.utils.MessageConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -32,14 +34,15 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
     private final AuthenticationManager authenticationManager;
-    private final RoleService roleService;
+
+    private final RoleRepository roleRepository;
 
     public LoginResponse login(LoginRequest request) {
         Authentication authentication;
-        try{
+        try {
             authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-        } catch (BadCredentialsException e){
-            throw new BadCredentialsException("Invalid email or password");
+        } catch (BadCredentialsException e) {
+            throw new BadCredentialsException(MessageConstants.INVALID_EMAIL_OR_PASSWORD);
         }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -49,12 +52,12 @@ public class AuthService {
 
     public RegisterResponse register(RegisterRequest request) {
         if (userRepository.existsByUserCredentialEmail(request.getEmail())) {
-            throw new AlreadyExistsException("Email already exists on database!");
+            throw new AlreadyExistsException(MessageConstants.EMAIL_ALREADY_EXISTS);
         }
 
-        Role role = roleService.getRoleByName("user");
-        Set<Role> roles = new HashSet<>();
-        roles.add(role);
+        Role role = roleRepository.findByName("ROLE_USER").orElseGet(() -> roleRepository.save(new Role("ROLE_USER")));
+
+        Set<Role> roles = new HashSet<>(Set.of(role));
 
         User user = new User();
 

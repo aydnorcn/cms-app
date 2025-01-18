@@ -10,30 +10,32 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import static com.aydnorcn.mis_app.utils.MessageConstants.*;
+
 @Getter
 @Setter
 public class CreateEventRequest {
 
-    @NotBlank(message = "Name cannot be null or empty!")
+    @NotBlank(message = NAME_NOT_BLANK)
     private String name;
 
-    @NotBlank(message = "Description cannot be null or empty!")
+    @NotBlank(message = DESCRIPTION_NOT_BLANK)
     private String description;
 
-    @NotBlank(message = "Location cannot be null or empty!")
+    @NotBlank(message = LOCATION_NOT_BLANK)
     private String location;
 
-    @NotNull(message = "Date cannot be null or empty!")
+    @NotNull(message = DATE_NOT_NULL)
     @JsonFormat(pattern = "dd.MM.yyyy")
     private LocalDate date;
 
-    @NotNull(message = "Start time cannot be null or empty!")
+    @NotNull(message = START_TIME_NOT_NULL)
     private LocalTime startTime;
 
-    @NotNull(message = "End time cannot be null or empty!")
+    @NotNull(message = END_TIME_NOT_NULL)
     private LocalTime endTime;
 
-    @NotNull(message = "Status cannot be null or empty!")
+    @NotNull(message = STATUS_NOT_NULL)
     private EventStatus status;
 
     public CreateEventRequest(String name, String description, String location, LocalDate date, LocalTime startTime, LocalTime endTime, EventStatus status) {

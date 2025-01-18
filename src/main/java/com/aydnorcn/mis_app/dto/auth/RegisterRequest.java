@@ -1,19 +1,26 @@
 package com.aydnorcn.mis_app.dto.auth;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
+
+import static com.aydnorcn.mis_app.utils.MessageConstants.*;
 
 @Getter
 public class RegisterRequest {
 
-    @NotBlank(message = "Email cannot be null or empty!")
+    @Email(message = INVALID_EMAIL_FORMAT)
+    @NotBlank(message = EMAIL_NOT_BLANK)
     private String email;
-    @NotBlank(message = "Password cannot be null or empty!")
+
+    @Size(min = 8, max = 30, message = PASSWORD_LENGTH)
+    @NotBlank(message = PASSWORD_NOT_BLANK)
     private String password;
 
-    @NotBlank(message = "Firstname cannot be null or empty!")
+    @NotBlank(message = FIRSTNAME_NOT_BLANK)
     private String firstName;
-    @NotBlank(message = "Lastname cannot be null or empty!")
+    @NotBlank(message = LASTNAME_NOT_BLANK)
     private String lastName;
 
     public RegisterRequest(String email, String password, String firstName, String lastName) {

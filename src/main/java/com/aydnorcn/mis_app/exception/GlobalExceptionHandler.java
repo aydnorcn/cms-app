@@ -1,9 +1,11 @@
 package com.aydnorcn.mis_app.exception;
 
+import com.aydnorcn.mis_app.utils.MessageConstants;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -45,7 +47,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({NoAuthorityException.class, AuthorizationDeniedException.class})
     public ResponseEntity<ErrorMessage> handleNoAuthorityException() {
-        return createResponseEntity(HttpStatus.UNAUTHORIZED, "You are not authorized to perform this action!");
+        return createResponseEntity(HttpStatus.UNAUTHORIZED, MessageConstants.UNAUTHORIZED_ACTION);
     }
 
     @ExceptionHandler(APIException.class)
@@ -55,7 +57,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorMessage> handleMissingRequestBody() {
-        return createResponseEntity(HttpStatus.BAD_REQUEST, "Request body is missing!");
+        return createResponseEntity(HttpStatus.BAD_REQUEST, MessageConstants.REQUEST_BODY_MISSING);
     }
 
     @ExceptionHandler(RateLimitExceedException.class)
@@ -66,6 +68,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidDataAccessApiUsageException.class)
     public ResponseEntity<ErrorMessage> handleInvalidDataAccessApiUsageException(InvalidDataAccessApiUsageException exception) {
         return createResponseEntity(HttpStatus.BAD_REQUEST, exception.getMessage());
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorMessage> handleBadCredentialsException(BadCredentialsException exception){
+        return createResponseEntity(HttpStatus.UNAUTHORIZED, exception.getMessage());
     }
 
     @ExceptionHandler(Exception.class)

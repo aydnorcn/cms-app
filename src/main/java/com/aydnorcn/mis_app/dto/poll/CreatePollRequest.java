@@ -8,19 +8,21 @@ import lombok.Getter;
 
 import java.util.List;
 
+import static com.aydnorcn.mis_app.utils.MessageConstants.*;
+
 @Getter
 public class CreatePollRequest {
 
-    @NotBlank(message = "Title cannot be null")
+    @NotBlank(message = TITLE_NOT_BLANK)
     private final String title;
-    @NotBlank(message = "Description cannot be null")
+    @NotBlank(message = DESCRIPTION_NOT_BLANK)
     private final String description;
-    @NotNull(message = "Type cannot be null")
+    @NotNull(message = POLL_TYPE_NOT_NULL)
     private final PollType type;
-    @NotNull(message = "Choices cannot be null")
+    @NotNull(message = CHOICES_NOT_NULL)
     private final List<String> choices;
 
-    @Min(value = 1, message = "Max vote count must be greater than 0")
+    @Min(value = 1, message = MAX_VOTE_COUNT_MIN)
     private final int maxVoteCount;
 
     public CreatePollRequest(String title, String description, PollType type, List<String> choices, Integer maxVoteCount) {
