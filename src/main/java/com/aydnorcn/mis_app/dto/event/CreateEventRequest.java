@@ -35,4 +35,18 @@ public class CreateEventRequest {
 
     @NotNull(message = "Status cannot be null or empty!")
     private EventStatus status;
+
+    public CreateEventRequest(String name, String description, String location, LocalDate date, LocalTime startTime, LocalTime endTime, EventStatus status) {
+        this.name = name;
+        this.description = description;
+        this.location = location;
+        this.date = date;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.status = status;
+    }
+
+    public CreateEventRequest(){
+
+    }
 }

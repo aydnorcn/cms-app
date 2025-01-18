@@ -25,4 +25,18 @@ public class PatchEventRequest {
     private LocalTime endTime;
 
     private EventStatus status;
+
+    public PatchEventRequest(String name, String description, String location, LocalDate date, LocalTime startTime, LocalTime endTime, EventStatus status) {
+        this.name = name;
+        this.description = description;
+        this.location = location;
+        this.date = date;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.status = status;
+    }
+
+    public PatchEventRequest(){
+
+    }
 }
