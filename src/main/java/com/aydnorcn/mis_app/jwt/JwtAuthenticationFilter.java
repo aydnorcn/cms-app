@@ -3,6 +3,7 @@ package com.aydnorcn.mis_app.jwt;
 import com.aydnorcn.mis_app.exception.APIException;
 import com.aydnorcn.mis_app.exception.ErrorMessage;
 import com.aydnorcn.mis_app.exception.ResourceNotFoundException;
+import com.aydnorcn.mis_app.utils.MessageConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -89,6 +90,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
         }
-        throw new ResourceNotFoundException("Token not found!");
+        throw new APIException(HttpStatus.UNAUTHORIZED, MessageConstants.JWT_TOKEN_NOT_FOUND);
     }
 }

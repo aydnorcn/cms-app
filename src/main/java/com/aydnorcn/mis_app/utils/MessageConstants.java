@@ -30,5 +30,10 @@ public class MessageConstants {
     public static final String AUTHENTICATION_REQUIRED = "Authentication required!";
     public static final String EVENT_NOT_FOUND = "Event not found!";
     public static final String RATE_LIMIT_EXCEEDED = "Rate limit exceeded!";
+    public static final String INVALID_JWT_TOKEN = "Invalid JWT token!";
+    public static final String EXPIRED_JWT_TOKEN = "Expired JWT token!";
+    public static final String UNSUPPORTED_JWT_TOKEN =  "Unsupported JWT token!";
+    public static final String JWT_CLAIMS_EMPTY = "JWT claims string is empty!";
+    public static final String JWT_TOKEN_NOT_FOUND = "JWT token not found!";
 
 }
