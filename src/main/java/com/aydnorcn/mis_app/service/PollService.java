@@ -8,6 +8,7 @@ import com.aydnorcn.mis_app.entity.Poll;
 import com.aydnorcn.mis_app.exception.ResourceNotFoundException;
 import com.aydnorcn.mis_app.filter.PollFilter;
 import com.aydnorcn.mis_app.repository.PollRepository;
+import com.aydnorcn.mis_app.utils.MessageConstants;
 import com.aydnorcn.mis_app.utils.params.PollParams;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,7 +27,7 @@ public class PollService {
 
     public Poll getPollById(String pollId) {
         return pollRepository.findById(pollId)
-                .orElseThrow(() -> new ResourceNotFoundException("Poll not found with id: " + pollId));
+                .orElseThrow(() -> new ResourceNotFoundException(MessageConstants.POLL_NOT_FOUND));
     }
 
     public PageResponseDto<Poll> getPolls(PollParams params) {

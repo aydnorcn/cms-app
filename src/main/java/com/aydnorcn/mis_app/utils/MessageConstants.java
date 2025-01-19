@@ -35,5 +35,6 @@ public class MessageConstants {
     public static final String UNSUPPORTED_JWT_TOKEN =  "Unsupported JWT token!";
     public static final String JWT_CLAIMS_EMPTY = "JWT claims string is empty!";
     public static final String JWT_TOKEN_NOT_FOUND = "JWT token not found!";
+    public static final String POLL_NOT_FOUND = "Poll not found!";
 
 }
