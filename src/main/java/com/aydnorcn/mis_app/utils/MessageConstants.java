@@ -29,5 +29,6 @@ public class MessageConstants {
     public static final String OPTION_ID_NOT_BLANK = "Option id cannot be null or blank";
     public static final String AUTHENTICATION_REQUIRED = "Authentication required!";
     public static final String EVENT_NOT_FOUND = "Event not found!";
+    public static final String RATE_LIMIT_EXCEEDED = "Rate limit exceeded!";
 
 }

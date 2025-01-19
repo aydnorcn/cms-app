@@ -2,6 +2,7 @@ package com.aydnorcn.mis_app.security;
 
 import com.aydnorcn.mis_app.exception.ErrorMessage;
 import com.aydnorcn.mis_app.exception.RateLimitExceedException;
+import com.aydnorcn.mis_app.utils.MessageConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.ConsumptionProbe;
@@ -21,7 +22,12 @@ import java.util.Map;
 
 public class RateLimitingFilter extends OncePerRequestFilter {
     private final Map<String, Bucket> buckets = new HashMap<>();
-    private static final int REQUESTS_PER_MINUTE = 100;
+
+    private final int REQUESTS_PER_MINUTE;
+
+    public RateLimitingFilter(int requestPerMinute) {
+        this.REQUESTS_PER_MINUTE = requestPerMinute;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -34,7 +40,8 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
 
         try {
-            if (!probe.isConsumed()) throw new RateLimitExceedException("Rate limit exceeded");
+            if (!probe.isConsumed()) throw new RateLimitExceedException(MessageConstants.RATE_LIMIT_EXCEEDED);
+            response.addHeader("X-Rate-Limit-Remaining", Long.toString(probe.getRemainingTokens()));
             filterChain.doFilter(request, response);
         } catch (RateLimitExceedException e) {
             ErrorMessage errorMessage = new ErrorMessage(new Date(), e.getMessage());
@@ -49,6 +56,5 @@ public class RateLimitingFilter extends OncePerRequestFilter {
             out.write(mapper.writeValueAsString(errorMessage));
             out.flush();
         }
-
     }
 }
