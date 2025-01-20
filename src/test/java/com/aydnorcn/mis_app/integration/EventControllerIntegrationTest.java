@@ -96,7 +96,7 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
 
     @Test
     @WithMockUser
-    void getEvents_ReturnsBadRequest_WhenParamsAreInvalid() throws Exception {
+    void getEvents_ReturnsDefaultPageResponseDto_WhenParamsAreInvalid() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get(API_URL)
                         .param("invalidParam", "invalidValue")
                         .accept(MediaType.APPLICATION_JSON)
