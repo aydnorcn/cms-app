@@ -8,6 +8,7 @@ import com.aydnorcn.mis_app.exception.APIException;
 import com.aydnorcn.mis_app.exception.ResourceNotFoundException;
 import com.aydnorcn.mis_app.filter.VoteFilter;
 import com.aydnorcn.mis_app.repository.VoteRepository;
+import com.aydnorcn.mis_app.utils.MessageConstants;
 import com.aydnorcn.mis_app.utils.PollType;
 import com.aydnorcn.mis_app.utils.params.VoteParams;
 import jakarta.transaction.Transactional;
@@ -33,7 +34,7 @@ public class VoteService {
 
     public Vote getVoteById(String voteId) {
         return voteRepository.findById(voteId)
-                .orElseThrow(() -> new ResourceNotFoundException("Vote not found with id: " + voteId));
+                .orElseThrow(() -> new ResourceNotFoundException(MessageConstants.VOTE_NOT_FOUND));
     }
 
     public PageResponseDto<Vote> getVotes(VoteParams params) {
@@ -58,7 +59,7 @@ public class VoteService {
         Option option = optionService.getOptionById(request.getOptionId());
 
         if (!option.getPoll().isActive()) {
-            throw new APIException(HttpStatus.BAD_REQUEST, "Poll is not active");
+            throw new APIException(HttpStatus.BAD_REQUEST, MessageConstants.POLL_IS_NOT_ACTIVE);
         }
 
         if (option.getPoll().getType().equals(PollType.SINGLE_CHOICE)) {
@@ -89,7 +90,7 @@ public class VoteService {
         int count = voteRepository.countByOptionPollAndUser(option.getPoll(), userContextService.getCurrentAuthenticatedUser());
 
         if (count >= option.getPoll().getMaxVoteCount()) {
-            throw new ResourceNotFoundException("User has already voted maximum times");
+            throw new APIException(HttpStatus.BAD_REQUEST, MessageConstants.MAX_VOTE_COUNT_EXCEEDED);
         }
 
         Vote vote = new Vote();

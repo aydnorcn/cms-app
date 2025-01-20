@@ -36,5 +36,8 @@ public class MessageConstants {
     public static final String JWT_CLAIMS_EMPTY = "JWT claims string is empty!";
     public static final String JWT_TOKEN_NOT_FOUND = "JWT token not found!";
     public static final String POLL_NOT_FOUND = "Poll not found!";
+    public static final String VOTE_NOT_FOUND = "Vote not found!";
+    public static final String MAX_VOTE_COUNT_EXCEEDED = "Max vote count exceeded!";
+    public static final String POLL_IS_NOT_ACTIVE = "Poll is not active!";
 
 }
