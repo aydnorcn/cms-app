@@ -63,8 +63,6 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                 .andDo(print());
     }
 
-    //TODO: Get Polls
-
     @Test
     @WithMockUser
     void getPolls_ReturnsPageResponseDto_WhenRequestIsValid() throws Exception{
