@@ -1,15 +1,15 @@
 package com.aydnorcn.mis_app.jwt;
 
 import com.aydnorcn.mis_app.exception.APIException;
-import com.aydnorcn.mis_app.exception.ErrorMessage;
 import com.aydnorcn.mis_app.exception.ResourceNotFoundException;
 import com.aydnorcn.mis_app.utils.MessageConstants;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,11 +19,9 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 @Component
 @RequiredArgsConstructor
@@ -31,6 +29,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider tokenProvider;
     private final UserDetailsService userDetailsService;
+
+
+    @Autowired
+    @Qualifier("handlerExceptionResolver")
+    private HandlerExceptionResolver exceptionResolver;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -58,30 +61,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
             filterChain.doFilter(request, response);
-        } catch (APIException e) {
-            ErrorMessage errorMessage = new ErrorMessage(new Date(), e.getMessage());
-
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
-
-            response.setContentType("application/json");
-            response.setStatus(e.getStatus().value());
-
-            PrintWriter out = response.getWriter();
-            out.write(mapper.writeValueAsString(errorMessage));
-            out.flush();
-        } catch (ResourceNotFoundException e) {
-            ErrorMessage errorMessage = new ErrorMessage(new Date(), e.getMessage());
-
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
-
-            response.setContentType("application/json");
-            response.setStatus(HttpStatus.BAD_REQUEST.value());
-
-            PrintWriter out = response.getWriter();
-            out.write(mapper.writeValueAsString(errorMessage));
-            out.flush();
+        } catch (APIException | ResourceNotFoundException e) {
+            exceptionResolver.resolveException(request, response, null, e);
         }
     }
 
