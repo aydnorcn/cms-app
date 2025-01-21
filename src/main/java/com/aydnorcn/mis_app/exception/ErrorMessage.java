@@ -1,17 +1,10 @@
 package com.aydnorcn.mis_app.exception;
 
-import lombok.Getter;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.util.Date;
 
-@Getter
-public class ErrorMessage {
-
-    private final Date timestamp;
-    private final String message;
-
-    public ErrorMessage(Date timestamp, String message) {
-        this.timestamp = timestamp;
-        this.message = message;
-    }
+public record ErrorMessage(
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss", timezone = "GMT+3") Date timestamp,
+        String message) {
 }
