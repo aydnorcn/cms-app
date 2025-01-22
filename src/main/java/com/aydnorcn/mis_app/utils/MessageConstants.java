@@ -39,5 +39,7 @@ public class MessageConstants {
     public static final String VOTE_NOT_FOUND = "Vote not found!";
     public static final String MAX_VOTE_COUNT_EXCEEDED = "Max vote count exceeded!";
     public static final String POLL_IS_NOT_ACTIVE = "Poll is not active!";
+    public static final String ROLE_NOT_FOUND = "Role not found!";
+    public static final String ROLE_ALREADY_EXISTS = "Role already exists!";
 
 }

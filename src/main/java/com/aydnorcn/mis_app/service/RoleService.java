@@ -5,6 +5,7 @@ import com.aydnorcn.mis_app.entity.Role;
 import com.aydnorcn.mis_app.exception.AlreadyExistsException;
 import com.aydnorcn.mis_app.exception.ResourceNotFoundException;
 import com.aydnorcn.mis_app.repository.RoleRepository;
+import com.aydnorcn.mis_app.utils.MessageConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ public class RoleService {
     private static final String ROLE_PREFIX = "ROLE_";
 
     public Role getRoleById(String roleId) {
-        return roleRepository.findById(roleId).orElseThrow(() -> new ResourceNotFoundException("Role not found!"));
+        return roleRepository.findById(roleId).orElseThrow(() -> new ResourceNotFoundException(MessageConstants.ROLE_NOT_FOUND));
     }
 
     public List<Role> getAllRoles() {
@@ -27,7 +28,7 @@ public class RoleService {
     }
 
     public Role getRoleByName(String name) {
-        return roleRepository.findByName(formatRoleName(name)).orElseThrow(() -> new ResourceNotFoundException("Role not found!"));
+        return roleRepository.findByName(formatRoleName(name)).orElseThrow(() -> new ResourceNotFoundException(MessageConstants.ROLE_NOT_FOUND));
     }
 
     public Role createRole(CreateRoleRequestDto dto) {
@@ -60,7 +61,7 @@ public class RoleService {
 
     private void validateRoleNameDoesNotExist(CreateRoleRequestDto dto) {
         if (roleRepository.existsByName(formatRoleName(dto.getName()))) {
-            throw new AlreadyExistsException("Role already exists!");
+            throw new AlreadyExistsException(MessageConstants.ROLE_ALREADY_EXISTS);
         }
     }
 }
