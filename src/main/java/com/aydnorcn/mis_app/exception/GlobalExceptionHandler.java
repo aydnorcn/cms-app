@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({NoAuthorityException.class, AuthorizationDeniedException.class})
     public ResponseEntity<ErrorMessage> handleNoAuthorityException() {
-        return createResponseEntity(HttpStatus.UNAUTHORIZED, MessageConstants.UNAUTHORIZED_ACTION);
+        return createResponseEntity(HttpStatus.FORBIDDEN, MessageConstants.UNAUTHORIZED_ACTION);
     }
 
     @ExceptionHandler(APIException.class)

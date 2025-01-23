@@ -71,6 +71,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
         }
-        throw new APIException(HttpStatus.UNAUTHORIZED, MessageConstants.JWT_TOKEN_NOT_FOUND);
+        throw new APIException(HttpStatus.UNAUTHORIZED, MessageConstants.AUTHENTICATION_REQUIRED);
     }
 }
