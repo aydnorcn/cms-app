@@ -1,5 +1,6 @@
 package com.aydnorcn.mis_app.integration.support;
 
+import com.aydnorcn.mis_app.TestUtils;
 import com.aydnorcn.mis_app.entity.Event;
 import com.aydnorcn.mis_app.jwt.JwtTokenProvider;
 import com.aydnorcn.mis_app.repository.EventRepository;
@@ -10,8 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.AuditorAware;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -40,6 +40,9 @@ public abstract class EventControllerIntegrationTestSupport {
     private AuditorAware<String> auditorAware;
 
     @MockitoBean
+    private UserDetailsService userDetailsService;
+
+    @Autowired
     protected JwtTokenProvider provider;
 
     protected List<Event> events = new LinkedList<>();
@@ -66,9 +69,6 @@ public abstract class EventControllerIntegrationTestSupport {
     }
 
     protected String getToken() {
-        return "Bearer " + provider.generateToken(new UsernamePasswordAuthenticationToken(
-                SecurityContextHolder.getContext().getAuthentication().getName(),
-                null,
-                SecurityContextHolder.getContext().getAuthentication().getAuthorities()));
+        return TestUtils.getToken(userDetailsService, provider);
     }
 }

@@ -8,7 +8,6 @@ import com.aydnorcn.mis_app.utils.EventStatus;
 import com.aydnorcn.mis_app.utils.MessageConstants;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -55,11 +54,9 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
     }
 
     @Test
-    @WithAnonymousUser
     void getEvent_ReturnUnauthorized_WhenUserIsNotAuthenticated() throws Exception {
         mockMvc
-                .perform(MockMvcRequestBuilders.get(API_URL + events.get(0).getId())
-                        .header("Authorization", getToken())
+                .perform(MockMvcRequestBuilders.get(API_URL + '/' + events.get(0).getId())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.message").value(MessageConstants.AUTHENTICATION_REQUIRED))
@@ -163,7 +160,22 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
 
     @Test
     @WithMockUser
-    void createEvent_ReturnUnauthorized_WhenUserIsNotAdmin() throws Exception {
+    void createEvent_ReturnsUnauthorized_WhenUserIsNotAuthenticated() throws Exception {
+        CreateEventRequest request = new CreateEventRequest("Test Event", "Test Description", "Test Location",
+                LocalDate.now(), LocalTime.NOON, LocalTime.NOON.plusHours(2), EventStatus.UPCOMING);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/events")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", getToken())
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.message").value(MessageConstants.UNAUTHORIZED_ACTION))
+                .andDo(print());
+    }
+
+    @Test
+    @WithMockUser
+    void createEvent_ReturnsForbidden_WhenUserIsNotAdmin() throws Exception {
         CreateEventRequest request = new CreateEventRequest("Test Event", "Test Description", "Test Location",
                 LocalDate.now(), LocalTime.NOON, LocalTime.NOON.plusHours(2), EventStatus.UPCOMING);
 
@@ -172,7 +184,7 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken())
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isUnauthorized())
+                .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.message").value(MessageConstants.UNAUTHORIZED_ACTION))
                 .andDo(print());
     }
@@ -210,7 +222,7 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
 
     @Test
     @WithMockUser
-    void updateEvent_ReturnsUnauthorized_WhenUserIsNotAdmin() throws Exception {
+    void updateEvent_ReturnsForbidden_WhenUserIsNotAdmin() throws Exception {
         CreateEventRequest request = new CreateEventRequest("Updated Event", "Updated Description", "Updated Location",
                 LocalDate.now(), LocalTime.NOON, LocalTime.NOON.plusHours(2), EventStatus.UPCOMING);
 
@@ -218,7 +230,7 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken()))
-                .andExpect(status().isUnauthorized())
+                .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.message").value(MessageConstants.UNAUTHORIZED_ACTION))
                 .andDo(print());
     }
@@ -283,14 +295,14 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
 
     @Test
     @WithMockUser
-    void patchEvent_ReturnsUnauthorized_WhenUserIsNotAdmin() throws Exception {
+    void patchEvent_ReturnsForbidden_WhenUserIsNotAdmin() throws Exception {
         PatchEventRequest request = new PatchEventRequest("Patch Name", null, null, null, null, null, null);
 
         mockMvc.perform(MockMvcRequestBuilders.patch(API_URL + "/" + events.get(0).getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken()))
-                .andExpect(status().isUnauthorized())
+                .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.message").value(MessageConstants.UNAUTHORIZED_ACTION))
                 .andDo(print());
     }
@@ -368,11 +380,11 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
 
     @Test
     @WithMockUser
-    void deleteEvent_ReturnsUnauthorized_WhenUserIsNotAdmin() throws Exception {
+    void deleteEvent_ReturnsForbidden_WhenUserIsNotAdmin() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete(API_URL + "/" + events.get(0).getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken()))
-                .andExpect(status().isUnauthorized())
+                .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.message").value(MessageConstants.UNAUTHORIZED_ACTION))
                 .andDo(print());
     }
