@@ -1,8 +1,7 @@
 package com.aydnorcn.mis_app.service;
 
 import com.aydnorcn.mis_app.entity.User;
-import com.aydnorcn.mis_app.exception.ResourceNotFoundException;
-import com.aydnorcn.mis_app.repository.UserRepository;
+import com.aydnorcn.mis_app.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -11,10 +10,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserContextService {
 
-    private final UserRepository userRepository;
 
     public User getCurrentAuthenticatedUser() {
-        String currentPrincipalEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findByUserCredentialEmail(currentPrincipalEmail).orElseThrow(() -> new ResourceNotFoundException("User not found!"));
+        return ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
     }
 }
