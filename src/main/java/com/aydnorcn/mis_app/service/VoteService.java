@@ -1,5 +1,6 @@
 package com.aydnorcn.mis_app.service;
 
+import com.aydnorcn.mis_app.strategy.CreateVoteStrategy;
 import com.aydnorcn.mis_app.dto.PageResponseDto;
 import com.aydnorcn.mis_app.dto.vote.VoteRequest;
 import com.aydnorcn.mis_app.entity.Option;
@@ -9,6 +10,7 @@ import com.aydnorcn.mis_app.exception.ResourceNotFoundException;
 import com.aydnorcn.mis_app.filter.VoteFilter;
 import com.aydnorcn.mis_app.repository.VoteRepository;
 import com.aydnorcn.mis_app.utils.MessageConstants;
+import com.aydnorcn.mis_app.utils.PollType;
 import com.aydnorcn.mis_app.utils.params.VoteParams;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +21,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +32,7 @@ public class VoteService {
     private final UserContextService userContextService;
     private final OptionService optionService;
     private final PollService pollService;
+    private final Map<PollType, CreateVoteStrategy> createVoteStrategyMap;
 
     public Vote getVoteById(String voteId) {
         return voteRepository.findById(voteId)
@@ -61,10 +64,9 @@ public class VoteService {
             throw new APIException(HttpStatus.BAD_REQUEST, MessageConstants.POLL_IS_NOT_ACTIVE);
         }
 
-        return switch (option.getPoll().getType()) {
-            case SINGLE_CHOICE -> createSingleChoiceVote(option);
-            case MULTIPLE_CHOICE -> createMultipleChoiceVote(option);
-        };
+        CreateVoteStrategy strategy = createVoteStrategyMap.get(option.getPoll().getType());
+
+        return strategy.createVote(option);
     }
 
     public void deleteVote(String voteId) {
@@ -76,31 +78,5 @@ public class VoteService {
     public boolean isAuthenticatedUserOwnerOfVote(String voteId) {
         Vote vote = getVoteById(voteId);
         return vote.getUser().getId().equals(userContextService.getCurrentAuthenticatedUser().getId());
-    }
-
-    public Vote createSingleChoiceVote(Option option) {
-        Optional<Vote> optionalVote = voteRepository.findByOptionPoll(option.getPoll());
-
-        optionalVote.ifPresent(voteRepository::delete);
-
-        Vote vote = new Vote();
-        vote.setUser(userContextService.getCurrentAuthenticatedUser());
-        vote.setOption(option);
-
-        return voteRepository.save(vote);
-    }
-
-    public Vote createMultipleChoiceVote(Option option) {
-        int count = voteRepository.countByOptionPollAndUser(option.getPoll(), userContextService.getCurrentAuthenticatedUser());
-
-        if (count >= option.getPoll().getMaxVoteCount()) {
-            throw new APIException(HttpStatus.BAD_REQUEST, MessageConstants.MAX_VOTE_COUNT_EXCEEDED);
-        }
-
-        Vote vote = new Vote();
-        vote.setUser(userContextService.getCurrentAuthenticatedUser());
-        vote.setOption(option);
-
-        return voteRepository.save(vote);
     }
 }
