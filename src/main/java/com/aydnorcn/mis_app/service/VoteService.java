@@ -9,7 +9,6 @@ import com.aydnorcn.mis_app.exception.ResourceNotFoundException;
 import com.aydnorcn.mis_app.filter.VoteFilter;
 import com.aydnorcn.mis_app.repository.VoteRepository;
 import com.aydnorcn.mis_app.utils.MessageConstants;
-import com.aydnorcn.mis_app.utils.PollType;
 import com.aydnorcn.mis_app.utils.params.VoteParams;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -62,11 +61,10 @@ public class VoteService {
             throw new APIException(HttpStatus.BAD_REQUEST, MessageConstants.POLL_IS_NOT_ACTIVE);
         }
 
-        if (option.getPoll().getType().equals(PollType.SINGLE_CHOICE)) {
-            return createSingleChoiceVote(option);
-        } else {
-            return createMultipleChoiceVote(option);
-        }
+        return switch (option.getPoll().getType()) {
+            case SINGLE_CHOICE -> createSingleChoiceVote(option);
+            case MULTIPLE_CHOICE -> createMultipleChoiceVote(option);
+        };
     }
 
     public void deleteVote(String voteId) {
@@ -74,7 +72,13 @@ public class VoteService {
         voteRepository.delete(vote);
     }
 
-    private Vote createSingleChoiceVote(Option option) {
+
+    public boolean isAuthenticatedUserOwnerOfVote(String voteId) {
+        Vote vote = getVoteById(voteId);
+        return vote.getUser().getId().equals(userContextService.getCurrentAuthenticatedUser().getId());
+    }
+
+    public Vote createSingleChoiceVote(Option option) {
         Optional<Vote> optionalVote = voteRepository.findByOptionPoll(option.getPoll());
 
         optionalVote.ifPresent(voteRepository::delete);
@@ -86,7 +90,7 @@ public class VoteService {
         return voteRepository.save(vote);
     }
 
-    private Vote createMultipleChoiceVote(Option option) {
+    public Vote createMultipleChoiceVote(Option option) {
         int count = voteRepository.countByOptionPollAndUser(option.getPoll(), userContextService.getCurrentAuthenticatedUser());
 
         if (count >= option.getPoll().getMaxVoteCount()) {
@@ -98,11 +102,5 @@ public class VoteService {
         vote.setOption(option);
 
         return voteRepository.save(vote);
-    }
-
-
-    public boolean isAuthenticatedUserOwnerOfVote(String voteId) {
-        Vote vote = getVoteById(voteId);
-        return vote.getUser().getId().equals(userContextService.getCurrentAuthenticatedUser().getId());
     }
 }
