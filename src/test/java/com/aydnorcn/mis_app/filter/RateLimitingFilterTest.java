@@ -4,6 +4,7 @@ import com.aydnorcn.mis_app.jwt.JwtTokenProvider;
 import com.aydnorcn.mis_app.utils.MessageConstants;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,6 +30,9 @@ class RateLimitingFilterTest {
     @MockitoBean
     protected JwtTokenProvider provider;
 
+    @Value("${rate.limiting.max.requests-per-minute}")
+    protected int maxRequestsPerMinute;
+
     protected String getToken() {
         return "Bearer " + provider.generateToken(new UsernamePasswordAuthenticationToken(
                 SecurityContextHolder.getContext().getAuthentication().getName(),
@@ -40,7 +44,7 @@ class RateLimitingFilterTest {
     @WithMockUser
     void filter_ReturnTooManyRequest_WhenExceedRateLimit() throws Exception {
         String token = getToken();
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < maxRequestsPerMinute + 5; i++) {
             mockMvc.perform(MockMvcRequestBuilders.get("/api/events")
                     .header("Authorization", token));
         }
