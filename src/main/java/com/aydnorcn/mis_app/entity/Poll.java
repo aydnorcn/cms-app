@@ -26,7 +26,7 @@ public class Poll {
     private String title;
     private String description;
 
-    @OneToMany(mappedBy = "poll", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "poll", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Option> options = new LinkedList<>();
 
     @Enumerated(EnumType.STRING)
