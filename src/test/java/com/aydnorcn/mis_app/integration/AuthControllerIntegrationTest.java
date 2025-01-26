@@ -2,9 +2,8 @@ package com.aydnorcn.mis_app.integration;
 
 import com.aydnorcn.mis_app.dto.auth.LoginRequest;
 import com.aydnorcn.mis_app.dto.auth.RegisterRequest;
-import com.aydnorcn.mis_app.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,6 +20,7 @@ import static com.aydnorcn.mis_app.utils.MessageConstants.*;
 @ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 class AuthControllerIntegrationTest {
 
     @Autowired
@@ -29,14 +29,7 @@ class AuthControllerIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    private UserRepository userRepository;
     private final String API_URL = "/api/auth";
-
-    @BeforeEach
-    void init(){
-        userRepository.deleteAll();
-    }
 
 
     @Test
