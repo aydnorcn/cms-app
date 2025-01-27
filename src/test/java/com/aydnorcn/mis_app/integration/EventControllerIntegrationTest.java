@@ -322,14 +322,15 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
         mockMvc.perform(MockMvcRequestBuilders.delete(API_URL + "/" + events.get(0).getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token))
-                .andExpect(status().isNoContent());
-
-        mockMvc.perform(MockMvcRequestBuilders.get(API_URL)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("Authorization", token))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.size()").value(9))
-                .andDo(print());
+                .andExpect(status().isNoContent())
+                .andDo(x -> {
+                    mockMvc.perform(MockMvcRequestBuilders.get(API_URL + "/" + events.get(0).getId())
+                                    .accept(MediaType.APPLICATION_JSON)
+                                    .header("Authorization", token))
+                            .andExpect(status().isNotFound())
+                            .andExpect(jsonPath("$.message").value(MessageConstants.EVENT_NOT_FOUND))
+                            .andDo(print());
+                });
     }
 
     @Test
