@@ -35,8 +35,4 @@ public class EventParams extends PaginationParams{
         if (params.containsKey("status")) status = EventStatus.fromString((String) params.get("status"));
         if (params.containsKey("created-by")) createdBy = (String) params.get("created-by");
     }
-
-    public EventParams() {
-
-    }
 }

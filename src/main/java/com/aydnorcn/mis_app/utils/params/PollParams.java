@@ -33,8 +33,4 @@ public class PollParams extends PaginationParams{
         if (params.containsKey("created-before")) createdBefore = LocalDateTime.parse((String) params.get("created-before"));
         if (params.containsKey("created-by")) createdBy = (String) params.get("created-by");
     }
-
-    public PollParams(){
-
-    }
 }

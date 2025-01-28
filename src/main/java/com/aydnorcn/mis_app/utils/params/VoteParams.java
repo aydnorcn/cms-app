@@ -32,8 +32,4 @@ public class VoteParams extends PaginationParams {
         if(params.containsKey("created-before")) createdBefore = LocalDateTime.parse((String) params.get("created-before"));
         if(params.containsKey("is-active")) isActive = Boolean.parseBoolean((String) params.get("is-active"));
     }
-
-    public VoteParams(){
-
-    }
 }
