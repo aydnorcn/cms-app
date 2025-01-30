@@ -7,6 +7,7 @@ import com.aydnorcn.mis_app.dto.auth.RegisterResponse;
 import com.aydnorcn.mis_app.entity.Role;
 import com.aydnorcn.mis_app.exception.AlreadyExistsException;
 import com.aydnorcn.mis_app.jwt.JwtTokenProvider;
+import com.aydnorcn.mis_app.repository.RoleRepository;
 import com.aydnorcn.mis_app.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +20,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -35,8 +38,10 @@ class AuthServiceTest {
     private JwtTokenProvider jwtTokenProvider;
     @Mock
     private UserRepository userRepository;
+
     @Mock
-    private RoleService roleService;
+    private RoleRepository roleRepository;
+
     @Mock
     private PasswordEncoder passwordEncoder;
 
@@ -83,7 +88,7 @@ class AuthServiceTest {
         RegisterRequest request = new RegisterRequest("new@example.com", "password", "First", "Last");
         Role role = new Role("user");
         when(userRepository.existsByUserCredentialEmail(request.getEmail())).thenReturn(false);
-        when(roleService.getRoleByName("user")).thenReturn(role);
+        when(roleRepository.findByName("ROLE_USER")).thenReturn(Optional.of(role));
         when(passwordEncoder.encode(request.getPassword())).thenReturn("encoded-password");
 
         RegisterResponse response = authService.register(request);
