@@ -21,6 +21,7 @@ import org.springframework.data.jpa.domain.Specification;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -66,11 +67,9 @@ class EventServiceTest {
 
     @Test
     void getEvents_ReturnsPageResponseDto_WhenRequestIsValid() {
-        EventParams params = new EventParams();
-        params.setPageNo(0);
-        params.setPageSize(10);
-        params.setSortBy("name");
-        params.setSortOrder("asc");
+        Map<String, Object> mapParams = Map.of("page-no", "0", "page-size", "10", "sort-by", "name", "sort-order", "asc");
+
+        EventParams params = new EventParams(mapParams);
 
         List<Event> events = List.of(new Event(), new Event());
         Page<Event> page = new PageImpl<>(events);
@@ -83,11 +82,9 @@ class EventServiceTest {
 
     @Test
     void getEvents_ReturnsEmptyPageResponseDto_WhenNoEventsMatch() {
-        EventParams params = new EventParams();
-        params.setPageNo(0);
-        params.setPageSize(10);
-        params.setSortBy("name");
-        params.setSortOrder("asc");
+        Map<String, Object> mapParams = Map.of("page-no", "0", "page-size", "10", "sort-by", "name", "sort-order", "asc");
+
+        EventParams params = new EventParams(mapParams);
 
         Page<Event> emptyPage = Page.empty();
         when(eventRepository.findAll(any(Specification.class), any(PageRequest.class))).thenReturn(emptyPage);

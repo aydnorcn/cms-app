@@ -110,10 +110,9 @@ class VoteServiceTest {
         String userId = "2";
         String optionId = "3";
 
-        VoteParams params = new VoteParams();
-        params.setPollId(pollId);
-        params.setUserId(userId);
-        params.setOptionId(optionId);
+        Map<String, Object> mapParams = Map.of("poll-id", pollId, "user-id", userId, "option-id", optionId);
+
+        VoteParams params = new VoteParams(mapParams);
 
         Page<Vote> page = new PageImpl<>(List.of(new Vote()));
 
