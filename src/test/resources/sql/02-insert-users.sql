@@ -27,12 +27,3 @@ insert into user_credentials (email,password,user_id,id) values ('user9@mail.com
 
 insert into users (id, name, created_at) values ('user-10','user10',CURRENT_TIMESTAMP);
 insert into user_credentials (email,password,user_id,id) values ('user10@mail.com','$2a$10$66ZmQrC9dGk51fkj3H6eAeKqQ0JlD1q3Bp8pSA.iAOPwpzwBxKytS','user-10','cred-10');
-
-insert into roles (name,id) values ('ROLE_USER','1');
-insert into roles (name,id) values ('ROLE_ADMIN','2');
-insert into roles (name,id) values ('ROLE_MODERATOR','3');
-insert into roles (name,id) values ('ROLE_ORGANIZATOR','4');
-
-insert into users_roles (user_id,role_id) values ('user-1','1');
-insert into users_roles (user_id,role_id) values ('user-2','1');
-insert into users_roles (user_id,role_id) values ('user-2','2');
