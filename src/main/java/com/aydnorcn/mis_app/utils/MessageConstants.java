@@ -49,4 +49,5 @@ public class MessageConstants {
     public static final String CONTENT_NOT_BLANK = "Content cannot be null";
     public static final String CATEGORY_NOT_BLANK = "Category cannot be null";
     public static final String POST_ALREADY_APPROVED = "Post already approved!";
+    public static final String COMMENT_NOT_FOUND = "Comment not found!";
 }
