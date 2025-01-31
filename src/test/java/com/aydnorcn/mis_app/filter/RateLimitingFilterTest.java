@@ -44,7 +44,7 @@ class RateLimitingFilterTest {
     @WithMockUser
     void filter_ReturnTooManyRequest_WhenExceedRateLimit() throws Exception {
         String token = getToken();
-        for (int i = 0; i < maxRequestsPerMinute + 5; i++) {
+        for (int i = 0; i < maxRequestsPerMinute * 2; i++) {
             mockMvc.perform(MockMvcRequestBuilders.get("/api/events")
                     .header("Authorization", token));
         }

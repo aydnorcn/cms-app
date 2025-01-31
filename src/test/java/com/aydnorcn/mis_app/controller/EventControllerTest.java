@@ -111,12 +111,12 @@ class EventControllerTest {
 
     @Test
     @WithMockUser
-    void createEvent_ReturnUnauthorized_WhenUserIsNotAdmin() throws Exception {
+    void createEvent_ReturnForbidden_WhenUserIsNotAdmin() throws Exception {
         mvc
                 .perform(MockMvcRequestBuilders.post("/api/events")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -153,12 +153,12 @@ class EventControllerTest {
 
     @Test
     @WithMockUser
-    void updateEvent_ReturnUnauthorized_WhenUserIsNotAdmin() throws Exception {
+    void updateEvent_ReturnForbidden_WhenUserIsNotAdmin() throws Exception {
         mvc
                 .perform(MockMvcRequestBuilders.put("/api/events/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -210,7 +210,7 @@ class EventControllerTest {
 
     @Test
     @WithMockUser
-    void patchEvent_ReturnsUnauthorized_WhenUserIsNotAdmin() throws Exception {
+    void patchEvent_ReturnsForbidden_WhenUserIsNotAdmin() throws Exception {
         PatchEventRequest patchEventRequest = new PatchEventRequest();
         patchEventRequest.setName("Updated Event");
         patchEventRequest.setDescription("Updated Description");
@@ -218,7 +218,7 @@ class EventControllerTest {
         mvc.perform(MockMvcRequestBuilders.patch("/api/events/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(patchEventRequest)))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -269,9 +269,9 @@ class EventControllerTest {
 
     @Test
     @WithMockUser
-    void deleteEvent_ReturnsUnauthorized_WhenUserIsNotAdmin() throws Exception {
+    void deleteEvent_ReturnsForbidden_WhenUserIsNotAdmin() throws Exception {
         mvc.perform(MockMvcRequestBuilders.delete("/api/events/1"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isForbidden());
     }
 
 }

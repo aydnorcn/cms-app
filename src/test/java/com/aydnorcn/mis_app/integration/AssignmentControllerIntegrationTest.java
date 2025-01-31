@@ -37,8 +37,6 @@ class AssignmentControllerIntegrationTest extends AssignmentControllerIntegratio
                 .andExpect(status().isNotFound());
     }
 
-    //TODO: Get assignments
-
     @Test
     void getAssignments_ReturnsAssignments_WhenRequestIsValid() throws Exception{
         int count = assignments.stream().filter(x -> x.getPriority() >= 3).toList().size();
