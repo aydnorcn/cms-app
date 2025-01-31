@@ -62,7 +62,6 @@ class JwtAuthenticationFilterTest {
 
     @BeforeEach
     void setup() {
-        userRepository.deleteAll();
         UserDetails userDetails = User.builder()
                 .username(testMail)
                 .password(password)
@@ -111,7 +110,7 @@ class JwtAuthenticationFilterTest {
     void shouldReturnUnauthorized_WhenTokenIsMissing() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/protected-endpoint"))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.message").value(MessageConstants.JWT_TOKEN_NOT_FOUND))
+                .andExpect(jsonPath("$.message").value(MessageConstants.AUTHENTICATION_REQUIRED))
                 .andDo(print());
     }
 
