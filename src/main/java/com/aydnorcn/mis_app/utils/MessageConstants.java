@@ -42,5 +42,11 @@ public class MessageConstants {
     public static final String ROLE_NOT_FOUND = "Role not found!";
     public static final String ROLE_ALREADY_EXISTS = "Role already exists!";
     public static final String ASSIGNMENT_NOT_FOUND = "Assignment not found!";
-
+    public static final String CATEGORY_NOT_FOUND = "Category not found!";
+    public static final String CATEGORY_NAME_NOT_BLANK = "Category name cannot be null or empty!";
+    public static final String CATEGORY_ALREADY_EXISTS = "Category already exists!";
+    public static final String POST_NOT_FOUND = "Post not found!";
+    public static final String CONTENT_NOT_BLANK = "Content cannot be null";
+    public static final String CATEGORY_NOT_BLANK = "Category cannot be null";
+    public static final String POST_ALREADY_APPROVED = "Post already approved!";
 }
