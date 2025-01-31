@@ -1,0 +1,10 @@
+insert into categories (id, name)
+values ('category-1', 'Category Name 1');
+insert into categories (id, name)
+values ('category-2', 'Category Name 2');
+insert into categories (id, name)
+values ('category-3', 'Category Name 3');
+insert into categories (id, name)
+values ('category-4', 'Category Name 4');
+insert into categories (id, name)
+values ('category-5', 'Category Name 5');
