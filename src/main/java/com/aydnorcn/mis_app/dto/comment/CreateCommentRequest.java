@@ -11,4 +11,8 @@ public class CreateCommentRequest {
 
     @NotBlank(message = MessageConstants.CONTENT_NOT_BLANK)
     private String content;
+
+    public CreateCommentRequest(String content) {
+        this.content = content;
+    }
 }
