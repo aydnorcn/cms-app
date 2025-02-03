@@ -3,6 +3,7 @@ package com.aydnorcn.mis_app.dto.assignment;
 import com.aydnorcn.mis_app.dto.AuditResponse;
 import com.aydnorcn.mis_app.entity.Assignment;
 import com.aydnorcn.mis_app.entity.User;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Getter;
 
 import java.util.List;
@@ -16,6 +17,8 @@ public class AssignmentResponse {
     private final String content;
     private final int priority;
     private final boolean completed;
+
+    @JsonUnwrapped
     private final AuditResponse audits;
 
     public AssignmentResponse(Assignment assignment) {

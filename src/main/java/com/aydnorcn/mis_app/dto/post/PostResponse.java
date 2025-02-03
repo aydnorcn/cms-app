@@ -4,7 +4,9 @@ import com.aydnorcn.mis_app.dto.AuditResponse;
 import com.aydnorcn.mis_app.entity.Category;
 import com.aydnorcn.mis_app.entity.Post;
 import com.aydnorcn.mis_app.utils.PostStatus;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Getter;
+
 
 @Getter
 public class PostResponse {
@@ -14,7 +16,9 @@ public class PostResponse {
     private final String content;
     private final PostStatus status;
     private final Category category;
+    private final int likeCount;
 
+    @JsonUnwrapped
     private final AuditResponse audits;
 
     public PostResponse(Post post) {
@@ -23,6 +27,7 @@ public class PostResponse {
         this.content = post.getContent();
         this.status = post.getStatus();
         this.category = post.getCategory();
+        this.likeCount = post.getLikes().size();
         this.audits = new AuditResponse(post.getCreatedAt(), post.getUpdatedAt(), post.getAuthor().getId(), null);
     }
 }

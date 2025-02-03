@@ -4,6 +4,7 @@ import com.aydnorcn.mis_app.dto.AuditResponse;
 import com.aydnorcn.mis_app.dto.option.OptionResponse;
 import com.aydnorcn.mis_app.entity.Poll;
 import com.aydnorcn.mis_app.utils.PollType;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Getter;
 
 import java.util.List;
@@ -17,6 +18,7 @@ public class PollResponse {
     private final List<OptionResponse> options;
     private final PollType type;
 
+    @JsonUnwrapped
     private final AuditResponse audits;
 
     public PollResponse(Poll poll) {

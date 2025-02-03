@@ -4,6 +4,7 @@ import com.aydnorcn.mis_app.dto.AuditResponse;
 import com.aydnorcn.mis_app.entity.Event;
 import com.aydnorcn.mis_app.utils.EventStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -27,6 +28,7 @@ public class EventResponse {
     private final LocalTime endTime;
     private final EventStatus status;
 
+    @JsonUnwrapped
     private final AuditResponse audits;
 
     public EventResponse(Event event) {

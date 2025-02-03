@@ -2,6 +2,7 @@ package com.aydnorcn.mis_app.dto.vote;
 
 import com.aydnorcn.mis_app.dto.AuditResponse;
 import com.aydnorcn.mis_app.entity.Vote;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Getter;
 
 @Getter
@@ -11,6 +12,8 @@ public class VoteResponse{
     private final String userId;
     private final String optionId;
     private final String pollId;
+
+    @JsonUnwrapped
     private final AuditResponse audits;
 
 
