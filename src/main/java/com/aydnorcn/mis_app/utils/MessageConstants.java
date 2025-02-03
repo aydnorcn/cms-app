@@ -1,5 +1,8 @@
 package com.aydnorcn.mis_app.utils;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class MessageConstants {
     public static final String EMAIL_NOT_BLANK = "Email cannot be null or empty!";
     public static final String PASSWORD_NOT_BLANK = "Password cannot be null or empty!";
@@ -50,4 +53,6 @@ public class MessageConstants {
     public static final String CATEGORY_NOT_BLANK = "Category cannot be null";
     public static final String POST_ALREADY_APPROVED = "Post already approved!";
     public static final String COMMENT_NOT_FOUND = "Comment not found!";
+    public static final String LIKE_NOT_FOUND = "Like not found!";
+    public static final String LIKE_ALREADY_EXISTS = "Like already exists!";
 }
