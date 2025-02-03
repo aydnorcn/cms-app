@@ -4,9 +4,9 @@ import com.aydnorcn.mis_app.dto.vote.VoteRequest;
 import com.aydnorcn.mis_app.entity.Poll;
 import com.aydnorcn.mis_app.integration.support.VoteControllerIntegrationTestSupport;
 import com.aydnorcn.mis_app.utils.PollType;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -15,7 +15,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("test")
-@Transactional
 class VoteControllerIntegrationTest extends VoteControllerIntegrationTestSupport {
 
     private final String API_URL = "/api/votes";
@@ -65,6 +64,7 @@ class VoteControllerIntegrationTest extends VoteControllerIntegrationTestSupport
                 .andDo(print());
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void createVote_ShouldReturnCreatedVoteResponse_WhenRequestIsValid() throws Exception {
         VoteRequest request = new VoteRequest();
@@ -78,6 +78,7 @@ class VoteControllerIntegrationTest extends VoteControllerIntegrationTestSupport
                 .andDo(print());
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void createVote_ShouldDeleteExistingVoteAndReturnCreatedVoteResponse_WhenPollTypeIsSingleChoiceAndRequestIsValid() throws Exception {
         VoteRequest request = new VoteRequest();
@@ -105,6 +106,7 @@ class VoteControllerIntegrationTest extends VoteControllerIntegrationTestSupport
                 .andDo(print());
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void createVote_ShouldVoteMultipleOptionsAndReturnCreatedVoteResponse_WhenPollTypeIsMultipleChoiceAndRequestIsValid() throws Exception {
         Poll multipleChoicePoll = options.stream().filter(x -> x.getPoll().getType().equals(PollType.MULTIPLE_CHOICE)).findFirst().get().getPoll();
@@ -145,6 +147,7 @@ class VoteControllerIntegrationTest extends VoteControllerIntegrationTestSupport
                 .andDo(print());
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void deleteVote_ShouldDeleteVote_WhenVoteExistsAndUserIsAuthorized() throws Exception {
         String id = createVote(options.get(0), user_email).getId();

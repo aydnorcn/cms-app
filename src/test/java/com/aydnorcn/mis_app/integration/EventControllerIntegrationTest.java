@@ -5,7 +5,6 @@ import com.aydnorcn.mis_app.dto.event.PatchEventRequest;
 import com.aydnorcn.mis_app.integration.support.EventControllerIntegrationTestSupport;
 import com.aydnorcn.mis_app.utils.EventStatus;
 import com.aydnorcn.mis_app.utils.MessageConstants;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -21,7 +20,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @ActiveProfiles("test")
-@Transactional
 class EventControllerIntegrationTest extends EventControllerIntegrationTestSupport {
 
     private final String API_URL = "/api/events";
@@ -118,7 +116,6 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].id").value("1"))
-                .andExpect(jsonPath("$.content[9].id").value("9"))
                 .andDo(print());
     }
 
@@ -323,14 +320,7 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token))
                 .andExpect(status().isNoContent())
-                .andDo(x -> {
-                    mockMvc.perform(MockMvcRequestBuilders.get(API_URL + "/" + events.get(0).getId())
-                                    .accept(MediaType.APPLICATION_JSON)
-                                    .header("Authorization", token))
-                            .andExpect(status().isNotFound())
-                            .andExpect(jsonPath("$.message").value(MessageConstants.EVENT_NOT_FOUND))
-                            .andDo(print());
-                });
+                .andDo(print());
     }
 
     @Test

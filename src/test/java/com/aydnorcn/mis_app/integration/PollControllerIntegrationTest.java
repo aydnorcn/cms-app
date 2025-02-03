@@ -5,9 +5,9 @@ import com.aydnorcn.mis_app.dto.poll.PatchPollRequest;
 import com.aydnorcn.mis_app.integration.support.PollControllerIntegrationTestSupport;
 import com.aydnorcn.mis_app.utils.MessageConstants;
 import com.aydnorcn.mis_app.utils.PollType;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -18,7 +18,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("test")
-@Transactional
 class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport {
 
     private final String API_URL = "/api/polls";
@@ -70,6 +69,7 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                 .andDo(print());
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void getPolls_ReturnsEmptyPageResponseDto_WhenNoEventsFound() throws Exception {
         pollRepository.deleteAll();
@@ -118,6 +118,7 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                 .andDo(print());
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void createPoll_ReturnsCreatedPoll_WhenParamsAreValidAndUserAdmin() throws Exception {
         CreatePollRequest request = new CreatePollRequest("Test Poll", "Test Description", PollType.SINGLE_CHOICE, List.of("Option1", "Option2"), 1);
@@ -162,6 +163,7 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                 .andDo(print());
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void updatePoll_ReturnsUpdatedPoll_WhenParamsAreValidAndUserIsAdmin() throws Exception {
         CreatePollRequest request = new CreatePollRequest("Updated Title", "Updated Description", PollType.SINGLE_CHOICE, List.of("Option1", "Option2"), 1);
@@ -231,6 +233,7 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                 .andDo(print());
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void patchPoll_ReturnsUpdatedPoll_WhenParamsAreValidAndUserIsAdmin() throws Exception {
         PatchPollRequest request = new PatchPollRequest("Patched Title", null, null, null);
@@ -260,6 +263,7 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                 .andDo(print());
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void patchPoll_ReturnsPoll_WhenAllParamsAreNull() throws Exception {
         PatchPollRequest request = new PatchPollRequest(null, null, null, null);
@@ -300,6 +304,7 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                 .andDo(print());
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void deletePoll_ReturnsNoContent_WhenPollIdExists() throws Exception {
         String token = getToken(admin_email, password);

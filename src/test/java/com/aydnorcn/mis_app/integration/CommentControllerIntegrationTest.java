@@ -9,6 +9,7 @@ import com.aydnorcn.mis_app.exception.ResourceNotFoundException;
 import com.aydnorcn.mis_app.integration.support.CommentControllerIntegrationTestSupport;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -17,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("test")
+//@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class CommentControllerIntegrationTest extends CommentControllerIntegrationTestSupport {
 
     private final String API_URL = "/api/comments";
@@ -90,6 +92,7 @@ class CommentControllerIntegrationTest extends CommentControllerIntegrationTestS
                 .andDo(print());
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void addCommentToPost_ReturnsComment_WhenPostExists() throws Exception {
         String content = "Test Comment";
@@ -119,6 +122,7 @@ class CommentControllerIntegrationTest extends CommentControllerIntegrationTestS
                 .andDo(print());
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void addReplyToComment_ReturnsComment_WhenParentCommentExists() throws Exception {
         String content = "Test Reply";
@@ -148,6 +152,7 @@ class CommentControllerIntegrationTest extends CommentControllerIntegrationTestS
                 .andDo(print());
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void updateComment_ReturnsUpdatedComment_WhenCommentExistsAndUserIsAdmin() throws Exception {
         Comment comment = comments.get(0);
@@ -164,9 +169,10 @@ class CommentControllerIntegrationTest extends CommentControllerIntegrationTestS
                 .andDo(print());
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void updateComment_ReturnsUpdatedComment_WhenCommentExistsAndUserOwnerOfComment() throws Exception {
-        Comment comment = comments.stream().filter(x-> x.getCreatedBy().equals("user-1")).findFirst()
+        Comment comment = comments.stream().filter(x -> x.getCreatedBy().equals("user-1")).findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
 
         String content = "Updated Comment";
@@ -211,6 +217,7 @@ class CommentControllerIntegrationTest extends CommentControllerIntegrationTestS
                 .andDo(print());
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void deleteComment_ReturnsNoContent_WhenCommentExistsAndUserIsAdmin() throws Exception {
         Comment comment = comments.get(0);
@@ -221,6 +228,7 @@ class CommentControllerIntegrationTest extends CommentControllerIntegrationTestS
                 .andDo(print());
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void deleteComment_ReturnsNoContent_WhenCommentExistsAndUserIsOwnerOfComment() throws Exception {
         Comment comment = comments.get(0);

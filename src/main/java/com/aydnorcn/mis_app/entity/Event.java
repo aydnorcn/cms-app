@@ -13,6 +13,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 @Data
@@ -33,6 +34,9 @@ public class Event {
 
     private LocalTime startTime;
     private LocalTime endTime;
+
+    @OneToMany(mappedBy = "event", cascade = {CascadeType.REMOVE})
+    private List<Assignment> assignments;
 
     @Enumerated(EnumType.STRING)
     private EventStatus status;

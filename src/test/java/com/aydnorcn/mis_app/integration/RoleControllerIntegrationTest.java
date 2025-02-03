@@ -5,6 +5,7 @@ import com.aydnorcn.mis_app.entity.Role;
 import com.aydnorcn.mis_app.integration.support.RoleControllerIntegrationTestSupport;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -69,6 +70,7 @@ class RoleControllerIntegrationTest extends RoleControllerIntegrationTestSupport
                 .andExpect(status().isNotFound());
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void createRole_ReturnRole_WhenNameIsNotExists() throws Exception {
         CreateRoleRequestDto request = new CreateRoleRequestDto();
@@ -109,6 +111,7 @@ class RoleControllerIntegrationTest extends RoleControllerIntegrationTestSupport
                 .andExpect(status().isBadRequest());
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void updateRole_ReturnRole_WhenNameIsNotExists() throws Exception {
         Role role = roles.get(0);
@@ -152,14 +155,18 @@ class RoleControllerIntegrationTest extends RoleControllerIntegrationTestSupport
                 .andExpect(status().isBadRequest());
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void deleteRole_ReturnNoContent_WhenRoleExists() throws Exception {
-        Role role = roles.get(0);
+        Role role = new Role();
+        role.setName("NEW_ROLE");
+        roleRepository.save(role);
 
         mockMvc.perform(MockMvcRequestBuilders.delete(API_URL + "/" + role.getId())
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(admin_email, password)))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent())
+                .andDo(print());
     }
 
     @Test

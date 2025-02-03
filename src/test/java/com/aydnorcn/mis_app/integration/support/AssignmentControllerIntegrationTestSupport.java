@@ -7,7 +7,6 @@ import com.aydnorcn.mis_app.entity.User;
 import com.aydnorcn.mis_app.repository.AssignmentRepository;
 import com.aydnorcn.mis_app.repository.EventRepository;
 import com.aydnorcn.mis_app.repository.UserRepository;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -18,7 +17,6 @@ import java.util.List;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional
 public abstract class AssignmentControllerIntegrationTestSupport extends TestUtils {
 
     @Autowired

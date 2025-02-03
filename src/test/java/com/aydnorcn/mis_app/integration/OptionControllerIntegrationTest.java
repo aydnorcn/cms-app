@@ -117,7 +117,7 @@ class OptionControllerIntegrationTest extends OptionControllerIntegrationTestSup
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.text").value(option.getText()));
+                .andExpect(jsonPath("$.text").value(request.getOptionText()));
     }
 
     @Test

@@ -32,6 +32,8 @@ public abstract class PollControllerIntegrationTestSupport extends TestUtils {
     void init() {
         when(auditorAware.getCurrentAuditor()).thenReturn(Optional.of("user"));
 
+        System.out.println(pollRepository.count());
+
         polls = pollRepository.findAll();
     }
 }

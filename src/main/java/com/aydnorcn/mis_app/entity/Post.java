@@ -8,6 +8,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.LinkedList;
+import java.util.List;
 
 @Entity
 @Data
@@ -24,6 +26,12 @@ public class Post {
 
     @Enumerated(EnumType.STRING)
     private PostStatus status;
+
+    @OneToMany(mappedBy = "post")
+    private List<Like> likes = new LinkedList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    private List<PostComment> comments = new LinkedList<>();
 
     @ManyToOne
     @JoinColumn(name = "author_id")

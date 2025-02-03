@@ -3,7 +3,6 @@ package com.aydnorcn.mis_app.integration.support;
 import com.aydnorcn.mis_app.TestUtils;
 import com.aydnorcn.mis_app.entity.Post;
 import com.aydnorcn.mis_app.repository.PostRepository;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19,7 +18,6 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional
 public class PostControllerIntegrationTestSupport extends TestUtils {
 
     @Autowired
