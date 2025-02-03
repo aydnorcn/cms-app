@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class LikeResponse {
@@ -23,5 +25,9 @@ public class LikeResponse {
         this.userId = like.getUser().getId();
         this.post = new PostResponse(like.getPost());
         this.auditResponse = new AuditResponse(like.getCreatedAt(), null, null, null);
+    }
+
+    public static List<LikeResponse> fromLikes(List<Like> likes) {
+        return likes.stream().map(LikeResponse::new).toList();
     }
 }

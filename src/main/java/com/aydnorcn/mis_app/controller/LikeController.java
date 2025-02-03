@@ -30,9 +30,7 @@ public class LikeController {
 
         PageResponseDto<Like> likes = likeService.getPostLikes(postId, pageNo, pageSize);
 
-        List<LikeResponse> responseList = likes.getContent().stream()
-                .map(LikeResponse::new)
-                .toList();
+        List<LikeResponse> responseList = LikeResponse.fromLikes(likes.getContent());
 
         return ResponseEntity.ok(new PageResponseDto<>(responseList, likes.getPageNo(), likes.getPageSize(), likes.getTotalElements(), likes.getTotalPages()));
     }
@@ -43,9 +41,7 @@ public class LikeController {
                                                                          @RequestParam(name = "page-size", required = false, defaultValue = "10") int pageSize) {
         PageResponseDto<Like> likes = likeService.getUserLikes(userId, pageNo, pageSize);
 
-        List<LikeResponse> responseList = likes.getContent().stream()
-                .map(LikeResponse::new)
-                .toList();
+        List<LikeResponse> responseList = LikeResponse.fromLikes(likes.getContent());
 
         return ResponseEntity.ok(new PageResponseDto<>(responseList, likes.getPageNo(), likes.getPageSize(), likes.getTotalElements(), likes.getTotalPages()));
     }
