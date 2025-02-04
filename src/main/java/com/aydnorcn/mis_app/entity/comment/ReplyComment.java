@@ -1,4 +1,4 @@
-package com.aydnorcn.mis_app.entity;
+package com.aydnorcn.mis_app.entity.comment;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -10,10 +10,10 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-@Table(name = "post_comments")
-public class PostComment extends Comment {
+@Table(name = "reply_comments")
+public class ReplyComment extends Comment {
 
     @ManyToOne
-    @JoinColumn(name = "post_id", nullable = false)
-    private Post post;
+    @JoinColumn(name = "parent_comment_id", nullable = false)
+    private Comment parentComment;
 }

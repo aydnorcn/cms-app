@@ -1,4 +1,4 @@
-package com.aydnorcn.mis_app.entity;
+package com.aydnorcn.mis_app.entity.comment;
 
 import jakarta.persistence.*;
 import lombok.Data;

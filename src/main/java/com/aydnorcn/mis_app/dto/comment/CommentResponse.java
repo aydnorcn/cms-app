@@ -1,6 +1,6 @@
 package com.aydnorcn.mis_app.dto.comment;
 
-import com.aydnorcn.mis_app.entity.Comment;
+import com.aydnorcn.mis_app.entity.comment.Comment;
 import lombok.Getter;
 import lombok.Setter;
 

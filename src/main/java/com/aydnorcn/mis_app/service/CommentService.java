@@ -2,10 +2,10 @@ package com.aydnorcn.mis_app.service;
 
 import com.aydnorcn.mis_app.dto.PageResponseDto;
 import com.aydnorcn.mis_app.dto.comment.CreateCommentRequest;
-import com.aydnorcn.mis_app.entity.Comment;
 import com.aydnorcn.mis_app.entity.Post;
-import com.aydnorcn.mis_app.entity.PostComment;
-import com.aydnorcn.mis_app.entity.ReplyComment;
+import com.aydnorcn.mis_app.entity.comment.Comment;
+import com.aydnorcn.mis_app.entity.comment.PostComment;
+import com.aydnorcn.mis_app.entity.comment.ReplyComment;
 import com.aydnorcn.mis_app.exception.ResourceNotFoundException;
 import com.aydnorcn.mis_app.repository.CommentRepository;
 import com.aydnorcn.mis_app.utils.MessageConstants;

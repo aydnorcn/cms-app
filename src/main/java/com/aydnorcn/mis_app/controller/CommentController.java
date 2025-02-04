@@ -2,8 +2,8 @@ package com.aydnorcn.mis_app.controller;
 
 import com.aydnorcn.mis_app.dto.PageResponseDto;
 import com.aydnorcn.mis_app.dto.comment.*;
-import com.aydnorcn.mis_app.entity.PostComment;
-import com.aydnorcn.mis_app.entity.ReplyComment;
+import com.aydnorcn.mis_app.entity.comment.PostComment;
+import com.aydnorcn.mis_app.entity.comment.ReplyComment;
 import com.aydnorcn.mis_app.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

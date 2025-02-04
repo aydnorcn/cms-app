@@ -1,5 +1,6 @@
 package com.aydnorcn.mis_app.entity;
 
+import com.aydnorcn.mis_app.entity.comment.PostComment;
 import com.aydnorcn.mis_app.utils.PostStatus;
 import jakarta.persistence.*;
 import lombok.Data;

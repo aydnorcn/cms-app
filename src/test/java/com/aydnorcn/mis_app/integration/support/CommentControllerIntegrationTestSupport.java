@@ -1,7 +1,7 @@
 package com.aydnorcn.mis_app.integration.support;
 
 import com.aydnorcn.mis_app.TestUtils;
-import com.aydnorcn.mis_app.entity.Comment;
+import com.aydnorcn.mis_app.entity.comment.Comment;
 import com.aydnorcn.mis_app.repository.CommentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
