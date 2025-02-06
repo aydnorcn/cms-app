@@ -41,6 +41,9 @@ public class Event {
     @Enumerated(EnumType.STRING)
     private EventStatus status;
 
+    @OneToMany(mappedBy = "event", cascade = {CascadeType.REMOVE})
+    private List<EventRegistration> registrations;
+
     @CreatedBy
     @Column(nullable = false, updatable = false)
     private String createdBy;

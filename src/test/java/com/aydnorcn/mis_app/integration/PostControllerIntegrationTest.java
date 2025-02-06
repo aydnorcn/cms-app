@@ -11,7 +11,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -276,8 +275,7 @@ class PostControllerIntegrationTest extends PostControllerIntegrationTestSupport
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value(title))
                 .andExpect(jsonPath("$.content").value(content))
-                .andExpect(jsonPath("$.status").value("APPROVED"))
-                .andDo(print());
+                .andExpect(jsonPath("$.status").value("APPROVED"));
     }
 
     @Test
@@ -294,8 +292,7 @@ class PostControllerIntegrationTest extends PostControllerIntegrationTestSupport
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken(post.getAuthor().getUserCredential().getEmail(), password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("PENDING"))
-                .andDo(print());
+                .andExpect(jsonPath("$.status").value("PENDING"));
     }
 
     @Test

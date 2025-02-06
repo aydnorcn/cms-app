@@ -9,7 +9,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -37,8 +36,7 @@ class RoleControllerIntegrationTest extends RoleControllerIntegrationTestSupport
         mockMvc.perform(MockMvcRequestBuilders.get(API_URL + "/" + role.getId())
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(user_email, password)))
-                .andExpect(status().isForbidden())
-                .andDo(print());
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -165,8 +163,7 @@ class RoleControllerIntegrationTest extends RoleControllerIntegrationTestSupport
         mockMvc.perform(MockMvcRequestBuilders.delete(API_URL + "/" + role.getId())
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(admin_email, password)))
-                .andExpect(status().isNoContent())
-                .andDo(print());
+                .andExpect(status().isNoContent());
     }
 
     @Test

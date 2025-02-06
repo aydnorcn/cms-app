@@ -13,7 +13,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static com.aydnorcn.mis_app.utils.MessageConstants.PASSWORD_LENGTH;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -54,8 +53,7 @@ class AuthControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.password").value(PASSWORD_LENGTH))
-                .andDo(print());
+                .andExpect(jsonPath("$.password").value(PASSWORD_LENGTH));
     }
 
     @Test
@@ -66,8 +64,7 @@ class AuthControllerIntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.post(API_URL + '/' + "register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest())
-                .andDo(print());
+                .andExpect(status().isBadRequest());
     }
 
     @Test

@@ -2,6 +2,7 @@ package com.aydnorcn.mis_app.integration;
 
 import com.aydnorcn.mis_app.dto.event.CreateEventRequest;
 import com.aydnorcn.mis_app.dto.event.PatchEventRequest;
+import com.aydnorcn.mis_app.entity.Event;
 import com.aydnorcn.mis_app.integration.support.EventControllerIntegrationTestSupport;
 import com.aydnorcn.mis_app.utils.EventStatus;
 import com.aydnorcn.mis_app.utils.MessageConstants;
@@ -14,7 +15,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -33,9 +33,7 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(events.get(0).getId()))
                 .andExpect(jsonPath("$.name").value(events.get(0).getName()))
-                .andExpect(jsonPath("$.description").value(events.get(0).getDescription()))
-                .andDo(print());
-
+                .andExpect(jsonPath("$.description").value(events.get(0).getDescription()));
     }
 
     @Test
@@ -45,8 +43,7 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value(MessageConstants.EVENT_NOT_FOUND))
-                .andDo(print());
+                .andExpect(jsonPath("$.message").value(MessageConstants.EVENT_NOT_FOUND));
     }
 
     @Test
@@ -55,33 +52,31 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                 .perform(MockMvcRequestBuilders.get(API_URL + '/' + events.get(0).getId())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.message").value(MessageConstants.AUTHENTICATION_REQUIRED))
-                .andDo(print());
+                .andExpect(jsonPath("$.message").value(MessageConstants.AUTHENTICATION_REQUIRED));
     }
 
     @Test
     void getEvents_ReturnsPageResponseDto_WhenRequestIsValid() throws Exception {
+        String firstEvent = events.stream().map(Event::getId).sorted().findFirst().get();
+
         mockMvc.perform(MockMvcRequestBuilders.get(API_URL)
                         .accept(MediaType.APPLICATION_JSON)
                         .param("sort-by", "id")
+                        .param("sort-order", "asc")
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].id").value("9"))
-                .andExpect(jsonPath("$.content.size()").value(events.size()))
-                .andDo(print());
+                .andExpect(jsonPath("$.content[0].id").value(firstEvent))
+                .andExpect(jsonPath("$.content.size()").value(events.size()));
     }
 
     @Test
     void getEvents_ReturnsEmptyPageResponseDto_WhenNoEventsFound() throws Exception {
-//        eventRepository.deleteAll();
-
         mockMvc.perform(MockMvcRequestBuilders.get(API_URL)
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.totalElements").value(events.size()))
-                .andDo(print());
+                .andExpect(jsonPath("$.totalElements").value(events.size()));
     }
 
     @Test
@@ -91,8 +86,7 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalElements").value(10))
-                .andDo(print());
+                .andExpect(jsonPath("$.totalElements").value(10));
     }
 
     @Test
@@ -103,20 +97,20 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.size()").value(2))
-                .andDo(print());
+                .andExpect(jsonPath("$.content.size()").value(2));
     }
 
     @Test
     void getEvents_ReturnsSortedEvents_WhenValidSortParamsProvided() throws Exception {
+        String firstEventId = events.stream().map(Event::getId).min(String::compareTo).get();
+
         mockMvc.perform(MockMvcRequestBuilders.get(API_URL)
                         .param("sort-by", "id")
                         .param("sort-order", "asc")
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].id").value("1"))
-                .andDo(print());
+                .andExpect(jsonPath("$.content[0].id").value(firstEventId));
     }
 
     @Test
@@ -130,8 +124,7 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("Test Event"))
-                .andExpect(jsonPath("$.description").value("Test Description"))
-                .andDo(print());
+                .andExpect(jsonPath("$.description").value("Test Description"));
     }
 
     @Test
@@ -144,8 +137,7 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .header("Authorization", getToken(user_email, password))
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.message").value(MessageConstants.UNAUTHORIZED_ACTION))
-                .andDo(print());
+                .andExpect(jsonPath("$.message").value(MessageConstants.UNAUTHORIZED_ACTION));
     }
 
     @Test
@@ -153,14 +145,12 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
         CreateEventRequest request = new CreateEventRequest("Test Event", "Test Description", "Test Location",
                 LocalDate.now(), LocalTime.NOON, LocalTime.NOON.plusHours(2), EventStatus.UPCOMING);
 
-
         mockMvc.perform(MockMvcRequestBuilders.post("/api/events")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(user_email, password))
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.message").value(MessageConstants.UNAUTHORIZED_ACTION))
-                .andDo(print());
+                .andExpect(jsonPath("$.message").value(MessageConstants.UNAUTHORIZED_ACTION));
     }
 
     @Test
@@ -173,8 +163,7 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .header("Authorization", getToken(user_email, password))
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.startTime").value(MessageConstants.START_TIME_NOT_NULL))
-                .andDo(print());
+                .andExpect(jsonPath("$.startTime").value(MessageConstants.START_TIME_NOT_NULL));
     }
 
     @Test
@@ -188,8 +177,7 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Updated Event"))
-                .andExpect(jsonPath("$.description").value("Updated Description"))
-                .andDo(print());
+                .andExpect(jsonPath("$.description").value("Updated Description"));
     }
 
     @Test
@@ -202,8 +190,7 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.message").value(MessageConstants.UNAUTHORIZED_ACTION))
-                .andDo(print());
+                .andExpect(jsonPath("$.message").value(MessageConstants.UNAUTHORIZED_ACTION));
     }
 
     @Test
@@ -216,8 +203,7 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.startTime").value(MessageConstants.START_TIME_NOT_NULL))
-                .andDo(print());
+                .andExpect(jsonPath("$.startTime").value(MessageConstants.START_TIME_NOT_NULL));
     }
 
     @Test
@@ -230,8 +216,7 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value(MessageConstants.EVENT_NOT_FOUND))
-                .andDo(print());
+                .andExpect(jsonPath("$.message").value(MessageConstants.EVENT_NOT_FOUND));
     }
 
     @Test
@@ -240,8 +225,7 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value(MessageConstants.REQUEST_BODY_MISSING))
-                .andDo(print());
+                .andExpect(jsonPath("$.message").value(MessageConstants.REQUEST_BODY_MISSING));
     }
 
     @Test
@@ -256,8 +240,7 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                 .andExpect(jsonPath("$.name").value("Patch Name"))
                 .andExpect(jsonPath("$.description").value(events.get(0).getDescription()))
                 .andExpect(jsonPath("$.location").value(events.get(0).getLocation()))
-                .andExpect(jsonPath("$.date").value(events.get(0).getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))))
-                .andDo(print());
+                .andExpect(jsonPath("$.date").value(events.get(0).getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))));
     }
 
     @Test
@@ -269,8 +252,7 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.message").value(MessageConstants.UNAUTHORIZED_ACTION))
-                .andDo(print());
+                .andExpect(jsonPath("$.message").value(MessageConstants.UNAUTHORIZED_ACTION));
     }
 
     @Test
@@ -285,8 +267,7 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                 .andExpect(jsonPath("$.name").value(events.get(0).getName()))
                 .andExpect(jsonPath("$.description").value(events.get(0).getDescription()))
                 .andExpect(jsonPath("$.location").value(events.get(0).getLocation()))
-                .andExpect(jsonPath("$.date").value(events.get(0).getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))))
-                .andDo(print());
+                .andExpect(jsonPath("$.date").value(events.get(0).getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))));
     }
 
     @Test
@@ -298,8 +279,7 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value(MessageConstants.EVENT_NOT_FOUND))
-                .andDo(print());
+                .andExpect(jsonPath("$.message").value(MessageConstants.EVENT_NOT_FOUND));
     }
 
     @Test
@@ -308,8 +288,7 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value(MessageConstants.REQUEST_BODY_MISSING))
-                .andDo(print());
+                .andExpect(jsonPath("$.message").value(MessageConstants.REQUEST_BODY_MISSING));
     }
 
     @Test
@@ -319,8 +298,7 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
         mockMvc.perform(MockMvcRequestBuilders.delete(API_URL + "/" + events.get(0).getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token))
-                .andExpect(status().isNoContent())
-                .andDo(print());
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -329,8 +307,7 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value(MessageConstants.EVENT_NOT_FOUND))
-                .andDo(print());
+                .andExpect(jsonPath("$.message").value(MessageConstants.EVENT_NOT_FOUND));
     }
 
     @Test
@@ -339,7 +316,6 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.message").value(MessageConstants.UNAUTHORIZED_ACTION))
-                .andDo(print());
+                .andExpect(jsonPath("$.message").value(MessageConstants.UNAUTHORIZED_ACTION));
     }
 }

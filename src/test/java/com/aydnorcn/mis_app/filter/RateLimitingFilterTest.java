@@ -1,18 +1,12 @@
 package com.aydnorcn.mis_app.filter;
 
-import com.aydnorcn.mis_app.jwt.JwtTokenProvider;
+import com.aydnorcn.mis_app.TestUtils;
 import com.aydnorcn.mis_app.utils.MessageConstants;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
@@ -22,28 +16,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-class RateLimitingFilterTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockitoBean
-    protected JwtTokenProvider provider;
+class RateLimitingFilterTest extends TestUtils {
 
     @Value("${rate.limiting.max.requests-per-minute}")
     protected int maxRequestsPerMinute;
 
-    protected String getToken() {
-        return "Bearer " + provider.generateToken(new UsernamePasswordAuthenticationToken(
-                SecurityContextHolder.getContext().getAuthentication().getName(),
-                null,
-                SecurityContextHolder.getContext().getAuthentication().getAuthorities()));
-    }
 
     @Test
-    @WithMockUser
     void filter_ReturnTooManyRequest_WhenExceedRateLimit() throws Exception {
-        String token = getToken();
+        String token = getToken(user_email, password);
         for (int i = 0; i < maxRequestsPerMinute * 2; i++) {
             mockMvc.perform(MockMvcRequestBuilders.get("/api/events")
                     .header("Authorization", token));
@@ -57,10 +38,9 @@ class RateLimitingFilterTest {
     }
 
     @Test
-    @WithMockUser
     void filter_ReturnResponse_WhenUnderLimit() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/events")
-                        .header("Authorization", getToken()))
+                        .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
                 .andExpect(header().exists("X-Rate-Limit-Remaining"))
                 .andDo(print());
