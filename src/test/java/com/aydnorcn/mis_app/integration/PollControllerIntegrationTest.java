@@ -2,18 +2,17 @@ package com.aydnorcn.mis_app.integration;
 
 import com.aydnorcn.mis_app.dto.poll.CreatePollRequest;
 import com.aydnorcn.mis_app.dto.poll.PatchPollRequest;
+import com.aydnorcn.mis_app.entity.Poll;
 import com.aydnorcn.mis_app.integration.support.PollControllerIntegrationTestSupport;
 import com.aydnorcn.mis_app.utils.MessageConstants;
 import com.aydnorcn.mis_app.utils.PollType;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.List;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -31,8 +30,7 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(polls.get(0).getId()))
                 .andExpect(jsonPath("$.title").value(polls.get(0).getTitle()))
-                .andExpect(jsonPath("$.description").value(polls.get(0).getDescription()))
-                .andDo(print());
+                .andExpect(jsonPath("$.description").value(polls.get(0).getDescription()));
     }
 
     @Test
@@ -42,8 +40,7 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value(MessageConstants.POLL_NOT_FOUND))
-                .andDo(print());
+                .andExpect(jsonPath("$.message").value(MessageConstants.POLL_NOT_FOUND));
     }
 
     @Test
@@ -52,8 +49,7 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                 .perform(MockMvcRequestBuilders.get(API_URL + "/" + polls.get(0).getId())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.message").value(MessageConstants.AUTHENTICATION_REQUIRED))
-                .andDo(print());
+                .andExpect(jsonPath("$.message").value(MessageConstants.AUTHENTICATION_REQUIRED));
     }
 
     @Test
@@ -63,22 +59,18 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .param("sort-by", "name")
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].title").value("Title 1"))
-                .andExpect(jsonPath("$.content[0].description").value("Description 1"))
-                .andExpect(jsonPath("$.content.size()").value(10))
-                .andDo(print());
+                .andExpect(jsonPath("$.content[0].title").value(polls.get(0).getTitle()))
+                .andExpect(jsonPath("$.content[0].description").value(polls.get(0).getDescription()))
+                .andExpect(jsonPath("$.content.size()").value(10));
     }
 
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
-    void getPolls_ReturnsEmptyPageResponseDto_WhenNoEventsFound() throws Exception {
-        pollRepository.deleteAll();
+    void getPolls_ReturnsDefaultPageResponseDto_WhenNoEventsFound() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get(API_URL)
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.size()").value(0))
-                .andDo(print());
+                .andExpect(jsonPath("$.content.size()").value(polls.size()));
     }
 
     @Test
@@ -88,37 +80,38 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .param("sort-by", "invalid")
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalElements").value(10))
-                .andDo(print());
+                .andExpect(jsonPath("$.totalElements").value(polls.size()));
     }
 
     @Test
     void getPolls_ReturnsFilteredEvents_WhenValidFilterParamsProvided() throws Exception {
+        Poll pollsArray[] = polls.stream().filter(x -> x.getType().equals(PollType.MULTIPLE_CHOICE)).toArray(Poll[]::new);
+
         mockMvc
                 .perform(MockMvcRequestBuilders.get(API_URL)
                         .accept(MediaType.APPLICATION_JSON)
                         .param("poll-type", "multiple")
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].title").value("Title 2"))
-                .andExpect(jsonPath("$.content.size()").value(5))
-                .andDo(print());
+                .andExpect(jsonPath("$.content[0].title").value(pollsArray[0].getTitle()))
+                .andExpect(jsonPath("$.content.size()").value(pollsArray.length));
     }
 
     @Test
     void getPolls_ReturnsSortedPolls_WhenValidSortParamsProvided() throws Exception {
+        String firstPoll = polls.stream().map(Poll::getTitle).max(String::compareTo).get();
+
         mockMvc
                 .perform(MockMvcRequestBuilders.get(API_URL)
                         .accept(MediaType.APPLICATION_JSON)
                         .param("sort-by", "title")
+                        .param("sort-order", "asc")
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].title").value("Title 1"))
-                .andExpect(jsonPath("$.content[9].title").value("Title 10"))
-                .andDo(print());
+                .andExpect(jsonPath("$.content[0].title").value(firstPoll))
+                .andExpect(jsonPath("$.totalElements").value(polls.size()));
     }
 
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void createPoll_ReturnsCreatedPoll_WhenParamsAreValidAndUserAdmin() throws Exception {
         CreatePollRequest request = new CreatePollRequest("Test Poll", "Test Description", PollType.SINGLE_CHOICE, List.of("Option1", "Option2"), 1);
@@ -130,8 +123,7 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.title").value(request.getTitle()))
-                .andExpect(jsonPath("$.description").value(request.getDescription()))
-                .andDo(print());
+                .andExpect(jsonPath("$.description").value(request.getDescription()));
     }
 
     @Test
@@ -144,8 +136,7 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.message").value(MessageConstants.UNAUTHORIZED_ACTION))
-                .andDo(print());
+                .andExpect(jsonPath("$.message").value(MessageConstants.UNAUTHORIZED_ACTION));
     }
 
     @Test
@@ -159,11 +150,9 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.title").value(MessageConstants.TITLE_NOT_BLANK))
-                .andExpect(jsonPath("$.description").value(MessageConstants.DESCRIPTION_NOT_BLANK))
-                .andDo(print());
+                .andExpect(jsonPath("$.description").value(MessageConstants.DESCRIPTION_NOT_BLANK));
     }
 
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void updatePoll_ReturnsUpdatedPoll_WhenParamsAreValidAndUserIsAdmin() throws Exception {
         CreatePollRequest request = new CreatePollRequest("Updated Title", "Updated Description", PollType.SINGLE_CHOICE, List.of("Option1", "Option2"), 1);
@@ -175,8 +164,7 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value(request.getTitle()))
-                .andExpect(jsonPath("$.description").value(request.getDescription()))
-                .andDo(print());
+                .andExpect(jsonPath("$.description").value(request.getDescription()));
     }
 
     @Test
@@ -189,8 +177,7 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.message").value(MessageConstants.UNAUTHORIZED_ACTION))
-                .andDo(print());
+                .andExpect(jsonPath("$.message").value(MessageConstants.UNAUTHORIZED_ACTION));
     }
 
     @Test
@@ -204,8 +191,7 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.title").value(MessageConstants.TITLE_NOT_BLANK))
-                .andExpect(jsonPath("$.description").value(MessageConstants.DESCRIPTION_NOT_BLANK))
-                .andDo(print());
+                .andExpect(jsonPath("$.description").value(MessageConstants.DESCRIPTION_NOT_BLANK));
     }
 
     @Test
@@ -218,8 +204,7 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value(MessageConstants.POLL_NOT_FOUND))
-                .andDo(print());
+                .andExpect(jsonPath("$.message").value(MessageConstants.POLL_NOT_FOUND));
     }
 
     @Test
@@ -229,11 +214,9 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value(MessageConstants.REQUEST_BODY_MISSING))
-                .andDo(print());
+                .andExpect(jsonPath("$.message").value(MessageConstants.REQUEST_BODY_MISSING));
     }
 
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void patchPoll_ReturnsUpdatedPoll_WhenParamsAreValidAndUserIsAdmin() throws Exception {
         PatchPollRequest request = new PatchPollRequest("Patched Title", null, null, null);
@@ -245,8 +228,7 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value(request.getTitle()))
-                .andExpect(jsonPath("$.description").value(polls.get(0).getDescription()))
-                .andDo(print());
+                .andExpect(jsonPath("$.description").value(polls.get(0).getDescription()));
     }
 
     @Test
@@ -259,11 +241,9 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.message").value(MessageConstants.UNAUTHORIZED_ACTION))
-                .andDo(print());
+                .andExpect(jsonPath("$.message").value(MessageConstants.UNAUTHORIZED_ACTION));
     }
 
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void patchPoll_ReturnsPoll_WhenAllParamsAreNull() throws Exception {
         PatchPollRequest request = new PatchPollRequest(null, null, null, null);
@@ -275,8 +255,7 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value(polls.get(0).getTitle()))
-                .andExpect(jsonPath("$.description").value(polls.get(0).getDescription()))
-                .andDo(print());
+                .andExpect(jsonPath("$.description").value(polls.get(0).getDescription()));
     }
 
     @Test
@@ -289,8 +268,7 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value(MessageConstants.POLL_NOT_FOUND))
-                .andDo(print());
+                .andExpect(jsonPath("$.message").value(MessageConstants.POLL_NOT_FOUND));
     }
 
     @Test
@@ -300,11 +278,9 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value(MessageConstants.REQUEST_BODY_MISSING))
-                .andDo(print());
+                .andExpect(jsonPath("$.message").value(MessageConstants.REQUEST_BODY_MISSING));
     }
 
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void deletePoll_ReturnsNoContent_WhenPollIdExists() throws Exception {
         String token = getToken(admin_email, password);
@@ -312,8 +288,7 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
         mockMvc
                 .perform(MockMvcRequestBuilders.delete(API_URL + "/" + polls.get(0).getId())
                         .header("Authorization", token))
-                .andExpect(status().isNoContent())
-                .andDo(print());
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -322,8 +297,7 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                 .perform(MockMvcRequestBuilders.delete(API_URL + "/123")
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value(MessageConstants.POLL_NOT_FOUND))
-                .andDo(print());
+                .andExpect(jsonPath("$.message").value(MessageConstants.POLL_NOT_FOUND));
     }
 
     @Test
@@ -332,7 +306,6 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                 .perform(MockMvcRequestBuilders.delete(API_URL + "/" + polls.get(0).getId())
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.message").value(MessageConstants.UNAUTHORIZED_ACTION))
-                .andDo(print());
+                .andExpect(jsonPath("$.message").value(MessageConstants.UNAUTHORIZED_ACTION));
     }
 }

@@ -1,35 +1,41 @@
-package com.aydnorcn.mis_app.entity.comment;
+package com.aydnorcn.mis_app.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Data
 @EntityListeners(AuditingEntityListener.class)
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public abstract class Comment {
+@Table(name = "event_registrations")
+public class EventRegistration {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(nullable = false)
-    private String content;
 
-    @OneToMany(mappedBy = "parentComment", orphanRemoval = true)
-    private List<ReplyComment> comments;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    private Event event;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @CreatedBy
-    @Column(nullable = false, updatable = false)
-    private String createdBy;
+    public EventRegistration(User user, Event event) {
+        this.user = user;
+        this.event = event;
+    }
+
+    public EventRegistration() {
+
+    }
 }
