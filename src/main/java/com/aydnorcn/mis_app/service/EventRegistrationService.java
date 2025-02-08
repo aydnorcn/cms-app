@@ -3,6 +3,7 @@ package com.aydnorcn.mis_app.service;
 import com.aydnorcn.mis_app.dto.PageResponseDto;
 import com.aydnorcn.mis_app.entity.Event;
 import com.aydnorcn.mis_app.entity.EventRegistration;
+import com.aydnorcn.mis_app.exception.AlreadyExistsException;
 import com.aydnorcn.mis_app.exception.ResourceNotFoundException;
 import com.aydnorcn.mis_app.filter.EventRegistrationFilter;
 import com.aydnorcn.mis_app.repository.EventRegistrationRepository;
@@ -40,6 +41,10 @@ public class EventRegistrationService {
 
     public EventRegistration saveEventRegistration(String eventId){
         Event event = eventService.getEventById(eventId);
+
+        if(eventRegistrationRepository.existsByUserAndEvent(userContextService.getCurrentAuthenticatedUser(), event)){
+            throw new AlreadyExistsException("Event registration already exists!");
+        }
 
         EventRegistration eventRegistration = new EventRegistration(userContextService.getCurrentAuthenticatedUser(), event);
 
