@@ -9,6 +9,9 @@ import com.aydnorcn.mis_app.exception.ErrorMessage;
 import com.aydnorcn.mis_app.service.AssignmentService;
 import com.aydnorcn.mis_app.utils.params.AssignmentParams;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -59,8 +62,23 @@ public class AssignmentController {
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
             }
     )
+    @Parameters({
+            @Parameter(name = "page-no", in = ParameterIn.QUERY, description = "Page number", schema = @Schema(type = "integer")),
+            @Parameter(name = "page-size", in = ParameterIn.QUERY, description = "Page size", schema = @Schema(type = "integer")),
+            @Parameter(name = "sort-by", description = "Sort by", in = ParameterIn.QUERY),
+            @Parameter(name = "sort-order", description = "Sort order", in = ParameterIn.QUERY),
+            @Parameter(name = "assigned-to", description = "Assigned to", in = ParameterIn.QUERY),
+            @Parameter(name = "event-id", description = "Event id", in = ParameterIn.QUERY),
+            @Parameter(name = "is-completed", description = "Is assignment completed?", in = ParameterIn.QUERY),
+            @Parameter(name = "min-priority", description = "Min priority of assignment", in = ParameterIn.QUERY),
+            @Parameter(name = "max-priority", description = "Max priority of assignment", in = ParameterIn.QUERY),
+            @Parameter(name = "created-after", description = "Assignment(s) created after", in = ParameterIn.QUERY),
+            @Parameter(name = "created-before", description = "Assignment(s) created before", in = ParameterIn.QUERY),
+            @Parameter(name = "created-by", description = "Assignment(s) created by", in = ParameterIn.QUERY),
+
+    })
     @GetMapping
-    public ResponseEntity<PageResponseDto<AssignmentResponse>> getAssignments(@RequestParam Map<String, Object> searchParams) {
+    public ResponseEntity<PageResponseDto<AssignmentResponse>> getAssignments(@RequestParam(required = false) Map<String, Object> searchParams) {
         AssignmentParams params = new AssignmentParams(searchParams);
 
         PageResponseDto<Assignment> assignments = assignmentService.getAssignments(params);
@@ -87,7 +105,7 @@ public class AssignmentController {
             }
     )
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public ResponseEntity<AssignmentResponse> createAssignment(@Validated @RequestBody CreateAssignmentRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(new AssignmentResponse(assignmentService.createAssignment(request)));
     }
@@ -108,7 +126,7 @@ public class AssignmentController {
             }
     )
     @PutMapping("/{assignmentId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public ResponseEntity<AssignmentResponse> updateAssignment(@PathVariable String assignmentId, @Validated @RequestBody CreateAssignmentRequest request) {
         return ResponseEntity.ok(new AssignmentResponse(assignmentService.updateAssignment(assignmentId, request)));
     }
@@ -127,7 +145,7 @@ public class AssignmentController {
             }
     )
     @PatchMapping("/{assignmentId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public ResponseEntity<AssignmentResponse> patchAssignment(@PathVariable String assignmentId, @Validated @RequestBody PatchAssignmentRequest request) {
         return ResponseEntity.ok(new AssignmentResponse(assignmentService.patchAssignment(assignmentId, request)));
     }
@@ -145,7 +163,7 @@ public class AssignmentController {
             }
     )
     @DeleteMapping("/{assignmentId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public ResponseEntity<Void> deleteAssignment(@PathVariable String assignmentId) {
         assignmentService.deleteAssignment(assignmentId);
         return ResponseEntity.noContent().build();

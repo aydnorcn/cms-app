@@ -39,7 +39,7 @@ public class RoleController {
             }
     )
     @GetMapping("/{roleId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public ResponseEntity<Role> getRoleById(@PathVariable String roleId) {
         return ResponseEntity.ok(roleService.getRoleById(roleId));
     }
@@ -59,7 +59,7 @@ public class RoleController {
             }
     )
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public ResponseEntity<Role> getRoleByName(@RequestParam String name) {
         return ResponseEntity.ok(roleService.getRoleByName(name));
     }
