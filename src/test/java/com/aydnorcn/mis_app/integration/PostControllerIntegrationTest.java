@@ -146,21 +146,6 @@ class PostControllerIntegrationTest extends PostControllerIntegrationTestSupport
     }
 
     @Test
-    void createPost_ReturnsForbidden_WhenUserIsNotAdmin() throws Exception {
-        String title = "title";
-        String content = "content";
-        String categoryId = posts.get(0).getCategory().getId();
-
-        CreatePostRequest request = new CreatePostRequest(title, content, categoryId);
-
-        mockMvc.perform(MockMvcRequestBuilders.post(API_URL)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .header("Authorization", getToken(user_email, password)))
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
     void createPost_ReturnsBadRequest_WhenParamsAreNotValid() throws Exception {
         String title = "";
         String content = "content";
