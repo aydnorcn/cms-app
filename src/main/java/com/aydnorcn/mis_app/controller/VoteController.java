@@ -1,5 +1,6 @@
 package com.aydnorcn.mis_app.controller;
 
+import com.aydnorcn.mis_app.dto.APIResponse;
 import com.aydnorcn.mis_app.dto.PageResponseDto;
 import com.aydnorcn.mis_app.dto.vote.VoteRequest;
 import com.aydnorcn.mis_app.dto.vote.VoteResponse;
@@ -46,8 +47,9 @@ public class VoteController {
             }
     )
     @GetMapping("/{voteId}")
-    public ResponseEntity<VoteResponse> getVote(@PathVariable String voteId) {
-        return ResponseEntity.ok(new VoteResponse(voteService.getVoteById(voteId)));
+    public ResponseEntity<APIResponse<VoteResponse>> getVote(@PathVariable String voteId) {
+        return ResponseEntity
+                .ok(new APIResponse<>(true, "Vote retrieved successfully", new VoteResponse(voteService.getVoteById(voteId))));
     }
 
     @Operation(
@@ -74,14 +76,15 @@ public class VoteController {
             @Parameter(name = "is-active", description = "Is voted poll active?", in = ParameterIn.QUERY),
     })
     @GetMapping
-    public ResponseEntity<PageResponseDto<VoteResponse>> getVotes(@RequestParam(required = false) Map<String, Object> searchParams) {
+    public ResponseEntity<APIResponse<PageResponseDto<VoteResponse>>> getVotes(@RequestParam(required = false) Map<String, Object> searchParams) {
         VoteParams params = new VoteParams(searchParams);
         PageResponseDto<Vote> votes = voteService.getVotes(params);
         List<VoteResponse> voteResponses = votes.getContent().stream().map(VoteResponse::new).toList();
 
         return ResponseEntity.ok(
-                new PageResponseDto<>(voteResponses, votes.getPageNo(), votes.getPageSize(), votes.getTotalElements(), votes.getTotalPages())
-        );
+                new APIResponse<>(true, "Votes retrieved successfully",
+                        new PageResponseDto<>(voteResponses, votes.getPageNo(), votes.getPageSize(), votes.getTotalElements(), votes.getTotalPages())
+                ));
     }
 
     @Operation(
@@ -98,8 +101,10 @@ public class VoteController {
             }
     )
     @PostMapping
-    public ResponseEntity<VoteResponse> createVote(@Validated @RequestBody VoteRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(new VoteResponse(voteService.createVote(request)));
+    public ResponseEntity<APIResponse<VoteResponse>> createVote(@Validated @RequestBody VoteRequest request) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new APIResponse<>(true, "Vote created successfully", new VoteResponse(voteService.createVote(request))));
     }
 
     @Operation(

@@ -1,5 +1,6 @@
 package com.aydnorcn.mis_app.controller;
 
+import com.aydnorcn.mis_app.dto.APIResponse;
 import com.aydnorcn.mis_app.dto.option.CreateOptionRequest;
 import com.aydnorcn.mis_app.dto.option.OptionResponse;
 import com.aydnorcn.mis_app.dto.option.UpdateOptionRequest;
@@ -38,8 +39,9 @@ public class OptionController {
             }
     )
     @GetMapping("/{optionId}")
-    public ResponseEntity<OptionResponse> getOptionById(@PathVariable String optionId) {
-        return ResponseEntity.ok(new OptionResponse(optionService.getOptionById(optionId)));
+    public ResponseEntity<APIResponse<OptionResponse>> getOptionById(@PathVariable String optionId) {
+        return ResponseEntity
+                .ok(new APIResponse<>(true, "Option retrieved successfully", new OptionResponse(optionService.getOptionById(optionId))));
     }
 
     @Operation(
@@ -59,8 +61,10 @@ public class OptionController {
     )
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'ORGANIZATOR')")
-    public ResponseEntity<OptionResponse> createOption(@Validated @RequestBody CreateOptionRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(new OptionResponse(optionService.createOption(request)));
+    public ResponseEntity<APIResponse<OptionResponse>> createOption(@Validated @RequestBody CreateOptionRequest request) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new APIResponse<>(true, "Option created successfully", new OptionResponse(optionService.createOption(request))));
     }
 
     @Operation(
@@ -80,8 +84,9 @@ public class OptionController {
     )
     @PutMapping("/{optionId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'ORGANIZATOR')")
-    public ResponseEntity<OptionResponse> updateOption(@PathVariable String optionId, @Validated @RequestBody UpdateOptionRequest request) {
-        return ResponseEntity.ok(new OptionResponse(optionService.updateOption(optionId, request)));
+    public ResponseEntity<APIResponse<OptionResponse>> updateOption(@PathVariable String optionId, @Validated @RequestBody UpdateOptionRequest request) {
+        return ResponseEntity
+                .ok(new APIResponse<>(true, "Option updated successfully", new OptionResponse(optionService.updateOption(optionId, request))));
     }
 
     @Operation(
@@ -98,7 +103,7 @@ public class OptionController {
     )
     @DeleteMapping("/{optionId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'ORGANIZATOR')")
-    public ResponseEntity<OptionResponse> deleteOption(@PathVariable String optionId) {
+    public ResponseEntity<Void> deleteOption(@PathVariable String optionId) {
         optionService.deleteOption(optionId);
         return ResponseEntity.noContent().build();
     }

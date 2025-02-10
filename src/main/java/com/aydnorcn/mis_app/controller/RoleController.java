@@ -1,5 +1,6 @@
 package com.aydnorcn.mis_app.controller;
 
+import com.aydnorcn.mis_app.dto.APIResponse;
 import com.aydnorcn.mis_app.dto.role.CreateRoleRequestDto;
 import com.aydnorcn.mis_app.entity.Role;
 import com.aydnorcn.mis_app.exception.ErrorMessage;
@@ -40,8 +41,9 @@ public class RoleController {
     )
     @GetMapping("/{roleId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
-    public ResponseEntity<Role> getRoleById(@PathVariable String roleId) {
-        return ResponseEntity.ok(roleService.getRoleById(roleId));
+    public ResponseEntity<APIResponse<Role>> getRoleById(@PathVariable String roleId) {
+        return ResponseEntity
+                .ok(new APIResponse<>(true, "Role retrieved successfully", roleService.getRoleById(roleId)));
     }
 
 
@@ -60,8 +62,9 @@ public class RoleController {
     )
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
-    public ResponseEntity<Role> getRoleByName(@RequestParam String name) {
-        return ResponseEntity.ok(roleService.getRoleByName(name));
+    public ResponseEntity<APIResponse<Role>> getRoleByName(@RequestParam String name) {
+        return ResponseEntity
+                .ok(new APIResponse<>(true, "Role retrieved successfully", roleService.getRoleByName(name)));
     }
 
 
@@ -82,8 +85,10 @@ public class RoleController {
     )
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Role> createRole(@Validated @RequestBody CreateRoleRequestDto role) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(roleService.createRole(role));
+    public ResponseEntity<APIResponse<Role>> createRole(@Validated @RequestBody CreateRoleRequestDto role) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new APIResponse<>(true, "Role created successfully", roleService.createRole(role)));
     }
 
     @Operation(
@@ -105,8 +110,9 @@ public class RoleController {
     )
     @PutMapping("/{roleId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Role> updateRole(@PathVariable String roleId, @Validated @RequestBody CreateRoleRequestDto role) {
-        return ResponseEntity.ok(roleService.updateRole(roleId, role));
+    public ResponseEntity<APIResponse<Role>> updateRole(@PathVariable String roleId, @Validated @RequestBody CreateRoleRequestDto role) {
+        return ResponseEntity
+                .ok(new APIResponse<>(true, "Role updated successfully", roleService.updateRole(roleId, role)));
     }
 
     @Operation(

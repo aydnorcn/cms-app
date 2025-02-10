@@ -1,5 +1,6 @@
 package com.aydnorcn.mis_app.controller;
 
+import com.aydnorcn.mis_app.dto.APIResponse;
 import com.aydnorcn.mis_app.dto.PageResponseDto;
 import com.aydnorcn.mis_app.dto.post.CreatePostRequest;
 import com.aydnorcn.mis_app.dto.post.PatchPostRequest;
@@ -47,8 +48,9 @@ public class PostController {
             }
     )
     @GetMapping("/{postId}")
-    public ResponseEntity<PostResponse> getPostById(@PathVariable String postId) {
-        return ResponseEntity.ok(new PostResponse(postService.getPostById(postId)));
+    public ResponseEntity<APIResponse<PostResponse>> getPostById(@PathVariable String postId) {
+        return ResponseEntity
+                .ok(new APIResponse<>(true, "Post retrieved successfully", new PostResponse(postService.getPostById(postId))));
     }
 
     @Operation(
@@ -74,7 +76,7 @@ public class PostController {
             @Parameter(name = "created-before", description = "Sort created before given date", in = ParameterIn.QUERY),
     })
     @GetMapping
-    public ResponseEntity<PageResponseDto<PostResponse>> getPosts(@RequestParam(required = false) Map<String, Object> searchParams) {
+    public ResponseEntity<APIResponse<PageResponseDto<PostResponse>>> getPosts(@RequestParam(required = false) Map<String, Object> searchParams) {
         PostParams params = new PostParams(searchParams);
 
 
@@ -82,8 +84,9 @@ public class PostController {
         List<PostResponse> postResponses = posts.getContent().stream().map(PostResponse::new).toList();
 
         return ResponseEntity.ok(
-                new PageResponseDto<>(postResponses, posts.getPageNo(), posts.getPageSize(), posts.getTotalElements(), posts.getTotalPages())
-        );
+                new APIResponse<>(true, "Posts retrieved successfully",
+                        new PageResponseDto<>(postResponses, posts.getPageNo(), posts.getPageSize(), posts.getTotalElements(), posts.getTotalPages())
+                ));
     }
 
     @Operation(
@@ -98,8 +101,10 @@ public class PostController {
             }
     )
     @PostMapping
-    public ResponseEntity<PostResponse> createPost(@Validated @RequestBody CreatePostRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(new PostResponse(postService.createPost(request)));
+    public ResponseEntity<APIResponse<PostResponse>> createPost(@Validated @RequestBody CreatePostRequest request) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new APIResponse<>(true, "Post created successfully", new PostResponse(postService.createPost(request))));
     }
 
     @Operation(
@@ -119,8 +124,9 @@ public class PostController {
     )
     @PutMapping("/{postId}")
     @PreAuthorize("hasAnyRole({'ADMIN', 'MODERATOR'}) or @postService.isAuthenticatedUserOwnerOfPost(#postId)")
-    public ResponseEntity<PostResponse> updatePost(@PathVariable String postId, @Validated @RequestBody CreatePostRequest request) {
-        return ResponseEntity.ok(new PostResponse(postService.updatePost(postId, request)));
+    public ResponseEntity<APIResponse<PostResponse>> updatePost(@PathVariable String postId, @Validated @RequestBody CreatePostRequest request) {
+        return ResponseEntity
+                .ok(new APIResponse<>(true, "Post updated successfully", new PostResponse(postService.updatePost(postId, request))));
     }
 
     @Operation(
@@ -139,8 +145,9 @@ public class PostController {
 
     @PatchMapping("/{postId}")
     @PreAuthorize("hasAnyRole({'ADMIN', 'MODERATOR'}) or @postService.isAuthenticatedUserOwnerOfPost(#postId)")
-    public ResponseEntity<PostResponse> patchPost(@PathVariable String postId, @RequestBody PatchPostRequest request) {
-        return ResponseEntity.ok(new PostResponse(postService.patchPost(postId, request)));
+    public ResponseEntity<APIResponse<PostResponse>> patchPost(@PathVariable String postId, @RequestBody PatchPostRequest request) {
+        return ResponseEntity
+                .ok(new APIResponse<>(true, "Post updated successfully", new PostResponse(postService.patchPost(postId, request))));
     }
 
     @Operation(
@@ -160,8 +167,9 @@ public class PostController {
     )
     @PatchMapping("/{postId}/approve")
     @PreAuthorize("hasAnyRole({'ADMIN', 'MODERATOR'})")
-    public ResponseEntity<PostResponse> approvePost(@PathVariable String postId) {
-        return ResponseEntity.ok(new PostResponse(postService.approvePost(postId)));
+    public ResponseEntity<APIResponse<PostResponse>> approvePost(@PathVariable String postId) {
+        return ResponseEntity
+                .ok(new APIResponse<>(true, "Post approved successfully", new PostResponse(postService.approvePost(postId))));
     }
 
     @Operation(

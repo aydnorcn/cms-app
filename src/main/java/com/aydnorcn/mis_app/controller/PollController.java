@@ -1,5 +1,6 @@
 package com.aydnorcn.mis_app.controller;
 
+import com.aydnorcn.mis_app.dto.APIResponse;
 import com.aydnorcn.mis_app.dto.PageResponseDto;
 import com.aydnorcn.mis_app.dto.poll.CreatePollRequest;
 import com.aydnorcn.mis_app.dto.poll.PatchPollRequest;
@@ -47,8 +48,9 @@ public class PollController {
             }
     )
     @GetMapping("/{pollId}")
-    public ResponseEntity<PollResponse> getPoll(@PathVariable String pollId) {
-        return ResponseEntity.ok(new PollResponse(pollService.getPollById(pollId)));
+    public ResponseEntity<APIResponse<PollResponse>> getPoll(@PathVariable String pollId) {
+        return ResponseEntity
+                .ok(new APIResponse<>(true, "Poll retrieves successfully", new PollResponse(pollService.getPollById(pollId))));
     }
 
     @Operation(
@@ -75,14 +77,15 @@ public class PollController {
             @Parameter(name = "created-by", description = "Poll created by given user id", in = ParameterIn.QUERY),
     })
     @GetMapping
-    public ResponseEntity<PageResponseDto<PollResponse>> getPolls(@RequestParam(required = false) Map<String, Object> searchParams) {
+    public ResponseEntity<APIResponse<PageResponseDto<PollResponse>>> getPolls(@RequestParam(required = false) Map<String, Object> searchParams) {
         PollParams params = new PollParams(searchParams);
         PageResponseDto<Poll> polls = pollService.getPolls(params);
         List<PollResponse> pollResponses = polls.getContent().stream().map(PollResponse::new).toList();
 
         return ResponseEntity.ok(
-                new PageResponseDto<>(pollResponses, polls.getPageNo(), polls.getPageSize(), polls.getTotalElements(), polls.getTotalPages())
-        );
+                new APIResponse<>(true, "Polls retrieved successfully",
+                        new PageResponseDto<>(pollResponses, polls.getPageNo(), polls.getPageSize(), polls.getTotalElements(), polls.getTotalPages())
+                ));
     }
 
     @Operation(
@@ -100,8 +103,10 @@ public class PollController {
     )
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'ORGANIZATOR')")
-    public ResponseEntity<PollResponse> createPoll(@Validated @RequestBody CreatePollRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(new PollResponse(pollService.createPoll(request)));
+    public ResponseEntity<APIResponse<PollResponse>> createPoll(@Validated @RequestBody CreatePollRequest request) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new APIResponse<>(true, "Poll created successfully", new PollResponse(pollService.createPoll(request))));
     }
 
     @Operation(
@@ -121,8 +126,9 @@ public class PollController {
     )
     @PutMapping("/{pollId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'ORGANIZATOR')")
-    public ResponseEntity<PollResponse> updatePoll(@PathVariable String pollId, @Validated @RequestBody CreatePollRequest request) {
-        return ResponseEntity.ok(new PollResponse(pollService.updatePoll(pollId, request)));
+    public ResponseEntity<APIResponse<PollResponse>> updatePoll(@PathVariable String pollId, @Validated @RequestBody CreatePollRequest request) {
+        return ResponseEntity
+                .ok(new APIResponse<>(true, "Poll updated successfully", new PollResponse(pollService.updatePoll(pollId, request))));
     }
 
     @Operation(
@@ -140,8 +146,9 @@ public class PollController {
     )
     @PatchMapping("/{pollId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'ORGANIZATOR')")
-    public ResponseEntity<PollResponse> patchPoll(@PathVariable String pollId, @RequestBody PatchPollRequest request) {
-        return ResponseEntity.ok(new PollResponse(pollService.patchPoll(pollId, request)));
+    public ResponseEntity<APIResponse<PollResponse>> patchPoll(@PathVariable String pollId, @RequestBody PatchPollRequest request) {
+        return ResponseEntity
+                .ok(new APIResponse<>(true, "Poll updated successfully", new PollResponse(pollService.patchPoll(pollId, request))));
     }
 
     @Operation(

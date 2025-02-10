@@ -1,5 +1,6 @@
 package com.aydnorcn.mis_app.controller;
 
+import com.aydnorcn.mis_app.dto.APIResponse;
 import com.aydnorcn.mis_app.dto.PageResponseDto;
 import com.aydnorcn.mis_app.dto.event.CreateEventRequest;
 import com.aydnorcn.mis_app.dto.event.EventResponse;
@@ -47,10 +48,11 @@ public class EventController {
             }
     )
     @GetMapping("/{eventId}")
-    public ResponseEntity<EventResponse> getEvent(@PathVariable String eventId) {
+    public ResponseEntity<APIResponse<EventResponse>> getEvent(@PathVariable String eventId) {
         Event event = eventService.getEventById(eventId);
 
-        return ResponseEntity.ok(new EventResponse(event));
+        return ResponseEntity
+                .ok(new APIResponse<>(true, "Event retrieved successfully", new EventResponse(event)));
     }
 
     @Operation(
@@ -78,15 +80,16 @@ public class EventController {
 
     })
     @GetMapping
-    public ResponseEntity<PageResponseDto<EventResponse>> getEvents(@RequestParam(required = false) Map<String, Object> searchParams) {
+    public ResponseEntity<APIResponse<PageResponseDto<EventResponse>>> getEvents(@RequestParam(required = false) Map<String, Object> searchParams) {
         EventParams params = new EventParams(searchParams);
 
         PageResponseDto<Event> events = eventService.getEvents(params);
         List<EventResponse> eventResponses = events.getContent().stream().map(EventResponse::new).toList();
 
         return ResponseEntity.ok(
-                new PageResponseDto<>(eventResponses, events.getPageNo(), events.getPageSize(), events.getTotalElements(), events.getTotalPages())
-        );
+                new APIResponse<>(true, "Events retrieved successfully",
+                        new PageResponseDto<>(eventResponses, events.getPageNo(), events.getPageSize(), events.getTotalElements(), events.getTotalPages())
+                ));
     }
 
     @Operation(
@@ -104,10 +107,12 @@ public class EventController {
     )
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'ORGANIZATOR')")
-    public ResponseEntity<EventResponse> createEvent(@Validated @RequestBody CreateEventRequest request) {
+    public ResponseEntity<APIResponse<EventResponse>> createEvent(@Validated @RequestBody CreateEventRequest request) {
         Event event = eventService.createEvent(request);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(new EventResponse(event));
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new APIResponse<>(true, "Event created successfully", new EventResponse(event)));
     }
 
     @Operation(
@@ -127,10 +132,11 @@ public class EventController {
     )
     @PutMapping("/{eventId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'ORGANIZATOR')")
-    public ResponseEntity<EventResponse> updateEvent(@PathVariable String eventId, @Validated @RequestBody CreateEventRequest request) {
+    public ResponseEntity<APIResponse<EventResponse>> updateEvent(@PathVariable String eventId, @Validated @RequestBody CreateEventRequest request) {
         Event event = eventService.updateEvent(eventId, request);
 
-        return ResponseEntity.ok(new EventResponse(event));
+        return ResponseEntity
+                .ok(new APIResponse<>(true, "Event updated successfully", new EventResponse(event)));
     }
 
     @Operation(
@@ -148,10 +154,11 @@ public class EventController {
     )
     @PatchMapping("/{eventId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'ORGANIZATOR')")
-    public ResponseEntity<EventResponse> patchEvent(@PathVariable String eventId, @Validated @RequestBody PatchEventRequest request) {
+    public ResponseEntity<APIResponse<EventResponse>> patchEvent(@PathVariable String eventId, @Validated @RequestBody PatchEventRequest request) {
         Event event = eventService.patchEvent(eventId, request);
 
-        return ResponseEntity.ok(new EventResponse(event));
+        return ResponseEntity
+                .ok(new APIResponse<>(true, "Event updated successfully", new EventResponse(event)));
     }
 
     @Operation(

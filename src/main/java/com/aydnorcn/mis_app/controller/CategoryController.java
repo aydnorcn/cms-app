@@ -1,5 +1,6 @@
 package com.aydnorcn.mis_app.controller;
 
+import com.aydnorcn.mis_app.dto.APIResponse;
 import com.aydnorcn.mis_app.dto.PageResponseDto;
 import com.aydnorcn.mis_app.dto.category.CreateCategoryRequest;
 import com.aydnorcn.mis_app.entity.Category;
@@ -41,8 +42,9 @@ public class CategoryController {
             }
     )
     @GetMapping("/{categoryId}")
-    public ResponseEntity<Category> getCategoryById(@PathVariable String categoryId) {
-        return ResponseEntity.ok(categoryService.getCategoryById(categoryId));
+    public ResponseEntity<APIResponse<Category>> getCategoryById(@PathVariable String categoryId) {
+        return ResponseEntity
+                .ok(new APIResponse<>(true, "Category retrieved successfully", categoryService.getCategoryById(categoryId)));
     }
 
     @Operation(
@@ -59,9 +61,10 @@ public class CategoryController {
             @Parameter(name = "page-size", in = ParameterIn.QUERY, description = "Page size", schema = @Schema(type = "integer")),
     })
     @GetMapping
-    public ResponseEntity<PageResponseDto<Category>> getCategories(@RequestParam(name = "page-no", required = false, defaultValue = "0") int pageNo,
+    public ResponseEntity<APIResponse<PageResponseDto<Category>>> getCategories(@RequestParam(name = "page-no", required = false, defaultValue = "0") int pageNo,
                                                                    @RequestParam(name = "page-size", required = false, defaultValue = "10") int pageSize) {
-        return ResponseEntity.ok(categoryService.getCategories(pageNo, pageSize));
+        return ResponseEntity
+                .ok(new APIResponse<>(true, "Categories retrieved successfully", categoryService.getCategories(pageNo, pageSize)));
     }
 
     @Operation(
@@ -81,8 +84,10 @@ public class CategoryController {
     )
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
-    public ResponseEntity<Category> createCategory(@Validated @RequestBody CreateCategoryRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.createCategory(request));
+    public ResponseEntity<APIResponse<Category>> createCategory(@Validated @RequestBody CreateCategoryRequest request) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new APIResponse<>(true, "Category created successfully", categoryService.createCategory(request)));
     }
 
     @Operation(
@@ -104,8 +109,9 @@ public class CategoryController {
     )
     @PutMapping("/{categoryId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
-    public ResponseEntity<Category> updateCategory(@PathVariable String categoryId, @Validated @RequestBody CreateCategoryRequest request) {
-        return ResponseEntity.ok(categoryService.updateCategory(categoryId, request));
+    public ResponseEntity<APIResponse<Category>> updateCategory(@PathVariable String categoryId, @Validated @RequestBody CreateCategoryRequest request) {
+        return ResponseEntity
+                .ok(new APIResponse<>(true, "Category updated successfully", categoryService.updateCategory(categoryId, request)));
     }
 
     @Operation(

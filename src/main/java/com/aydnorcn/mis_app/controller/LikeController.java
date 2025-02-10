@@ -1,5 +1,6 @@
 package com.aydnorcn.mis_app.controller;
 
+import com.aydnorcn.mis_app.dto.APIResponse;
 import com.aydnorcn.mis_app.dto.PageResponseDto;
 import com.aydnorcn.mis_app.dto.like.LikeResponse;
 import com.aydnorcn.mis_app.entity.Like;
@@ -41,8 +42,9 @@ public class LikeController {
             }
     )
     @GetMapping("/{likeId}")
-    public ResponseEntity<LikeResponse> getLikeById(@PathVariable String likeId) {
-        return ResponseEntity.ok(new LikeResponse(likeService.getLikeById(likeId)));
+    public ResponseEntity<APIResponse<LikeResponse>> getLikeById(@PathVariable String likeId) {
+        return ResponseEntity
+                .ok(new APIResponse<>(true, "Like retrieves successfully", new LikeResponse(likeService.getLikeById(likeId))));
     }
 
     @Operation(
@@ -61,15 +63,18 @@ public class LikeController {
             @Parameter(name = "page-size", description = "Page size", in = ParameterIn.QUERY),
     })
     @GetMapping("/posts/{postId}")
-    public ResponseEntity<PageResponseDto<LikeResponse>> getLikeByPostId(@PathVariable String postId,
-                                                                         @RequestParam(name = "page-no", required = false, defaultValue = "0") int pageNo,
-                                                                         @RequestParam(name = "page-size", required = false, defaultValue = "10") int pageSize) {
+    public ResponseEntity<APIResponse<PageResponseDto<LikeResponse>>> getLikeByPostId(@PathVariable String postId,
+                                                                                      @RequestParam(name = "page-no", required = false, defaultValue = "0") int pageNo,
+                                                                                      @RequestParam(name = "page-size", required = false, defaultValue = "10") int pageSize) {
 
         PageResponseDto<Like> likes = likeService.getPostLikes(postId, pageNo, pageSize);
 
         List<LikeResponse> responseList = LikeResponse.fromLikes(likes.getContent());
 
-        return ResponseEntity.ok(new PageResponseDto<>(responseList, likes.getPageNo(), likes.getPageSize(), likes.getTotalElements(), likes.getTotalPages()));
+        return ResponseEntity.ok(
+                new APIResponse<>(true, "Likes retrieved successfully",
+                        new PageResponseDto<>(responseList, likes.getPageNo(), likes.getPageSize(), likes.getTotalElements(), likes.getTotalPages())
+                ));
     }
 
     @Operation(
@@ -88,14 +93,17 @@ public class LikeController {
             @Parameter(name = "page-size", description = "Page size", in = ParameterIn.QUERY),
     })
     @GetMapping("/users/{userId}")
-    public ResponseEntity<PageResponseDto<LikeResponse>> getLikeByUserId(@PathVariable String userId,
-                                                                         @RequestParam(name = "page-no", required = false, defaultValue = "0") int pageNo,
-                                                                         @RequestParam(name = "page-size", required = false, defaultValue = "10") int pageSize) {
+    public ResponseEntity<APIResponse<PageResponseDto<LikeResponse>>> getLikeByUserId(@PathVariable String userId,
+                                                                                      @RequestParam(name = "page-no", required = false, defaultValue = "0") int pageNo,
+                                                                                      @RequestParam(name = "page-size", required = false, defaultValue = "10") int pageSize) {
         PageResponseDto<Like> likes = likeService.getUserLikes(userId, pageNo, pageSize);
 
         List<LikeResponse> responseList = LikeResponse.fromLikes(likes.getContent());
 
-        return ResponseEntity.ok(new PageResponseDto<>(responseList, likes.getPageNo(), likes.getPageSize(), likes.getTotalElements(), likes.getTotalPages()));
+        return ResponseEntity.ok(
+                new APIResponse<>(true, "Likes retrieved successfully",
+                        new PageResponseDto<>(responseList, likes.getPageNo(), likes.getPageSize(), likes.getTotalElements(), likes.getTotalPages())
+                ));
     }
 
     @Operation(
@@ -112,8 +120,10 @@ public class LikeController {
             }
     )
     @PostMapping("/posts/{postId}")
-    public ResponseEntity<LikeResponse> likePost(@PathVariable String postId) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(new LikeResponse(likeService.likePost(postId)));
+    public ResponseEntity<APIResponse<LikeResponse>> likePost(@PathVariable String postId) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new APIResponse<>(true, "Post liked successfully", new LikeResponse(likeService.likePost(postId))));
     }
 
     @Operation(

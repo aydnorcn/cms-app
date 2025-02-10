@@ -1,5 +1,6 @@
 package com.aydnorcn.mis_app.controller;
 
+import com.aydnorcn.mis_app.dto.APIResponse;
 import com.aydnorcn.mis_app.dto.PageResponseDto;
 import com.aydnorcn.mis_app.dto.event_registration.EventRegistrationResponse;
 import com.aydnorcn.mis_app.entity.EventRegistration;
@@ -42,9 +43,10 @@ public class EventRegistrationController {
             }
     )
     @GetMapping("/{id}")
-    public ResponseEntity<EventRegistrationResponse> getEventRegistrationById(@PathVariable String id) {
+    public ResponseEntity<APIResponse<EventRegistrationResponse>> getEventRegistrationById(@PathVariable String id) {
         EventRegistration eventRegistration = eventRegistrationService.getEventRegistrationById(id);
-        return ResponseEntity.ok(new EventRegistrationResponse(eventRegistration));
+        return ResponseEntity
+                .ok(new APIResponse<>(true, "Event registration retrieved successfully", new EventRegistrationResponse(eventRegistration)));
     }
 
     @Operation(
@@ -68,7 +70,7 @@ public class EventRegistrationController {
             @Parameter(name = "status", description = "Status", in = ParameterIn.QUERY),
     })
     @GetMapping
-    public ResponseEntity<PageResponseDto<EventRegistrationResponse>> getEventRegistrations(@RequestParam(required = false) Map<String, Object> searchParams) {
+    public ResponseEntity<APIResponse<PageResponseDto<EventRegistrationResponse>>> getEventRegistrations(@RequestParam(required = false) Map<String, Object> searchParams) {
         EventRegistrationParams params = new EventRegistrationParams(searchParams);
 
         PageResponseDto<EventRegistration> eventRegistrations = eventRegistrationService.getEventRegistrations(params);
@@ -77,7 +79,10 @@ public class EventRegistrationController {
                 .map(EventRegistrationResponse::new)
                 .toList();
 
-        return ResponseEntity.ok(new PageResponseDto<>(eventRegistrationResponses, eventRegistrations.getPageNo(), eventRegistrations.getPageSize(), eventRegistrations.getTotalElements(), eventRegistrations.getTotalPages()));
+        return ResponseEntity.ok(
+                new APIResponse<>(true, "Event registrations retrieved successfully",
+                        new PageResponseDto<>(eventRegistrationResponses, eventRegistrations.getPageNo(), eventRegistrations.getPageSize(), eventRegistrations.getTotalElements(), eventRegistrations.getTotalPages())
+                ));
     }
 
     @Operation(
@@ -94,9 +99,10 @@ public class EventRegistrationController {
             }
     )
     @PostMapping
-    public ResponseEntity<EventRegistrationResponse> saveEventRegistration(@RequestParam String eventId) {
+    public ResponseEntity<APIResponse<EventRegistrationResponse>> saveEventRegistration(@RequestParam String eventId) {
         EventRegistration eventRegistration = eventRegistrationService.saveEventRegistration(eventId);
-        return ResponseEntity.ok(new EventRegistrationResponse(eventRegistration));
+        return ResponseEntity
+                .ok(new APIResponse<>(true, "Event registration saved successfully", new EventRegistrationResponse(eventRegistration)));
     }
 
     @Operation(

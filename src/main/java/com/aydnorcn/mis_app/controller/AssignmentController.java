@@ -1,5 +1,6 @@
 package com.aydnorcn.mis_app.controller;
 
+import com.aydnorcn.mis_app.dto.APIResponse;
 import com.aydnorcn.mis_app.dto.PageResponseDto;
 import com.aydnorcn.mis_app.dto.assignment.AssignmentResponse;
 import com.aydnorcn.mis_app.dto.assignment.CreateAssignmentRequest;
@@ -47,8 +48,9 @@ public class AssignmentController {
             }
     )
     @GetMapping("/{assignmentId}")
-    public ResponseEntity<AssignmentResponse> getAssignmentById(@PathVariable String assignmentId) {
-        return ResponseEntity.ok(new AssignmentResponse(assignmentService.getAssignmentById(assignmentId)));
+    public ResponseEntity<APIResponse<AssignmentResponse>> getAssignmentById(@PathVariable String assignmentId) {
+        return ResponseEntity
+                .ok(new APIResponse<>(true, "Assignment retrieved successfully", new AssignmentResponse(assignmentService.getAssignmentById(assignmentId))));
     }
 
     @Operation(
@@ -78,14 +80,15 @@ public class AssignmentController {
 
     })
     @GetMapping
-    public ResponseEntity<PageResponseDto<AssignmentResponse>> getAssignments(@RequestParam(required = false) Map<String, Object> searchParams) {
+    public ResponseEntity<APIResponse<PageResponseDto<AssignmentResponse>>> getAssignments(@RequestParam(required = false) Map<String, Object> searchParams) {
         AssignmentParams params = new AssignmentParams(searchParams);
 
         PageResponseDto<Assignment> assignments = assignmentService.getAssignments(params);
         List<AssignmentResponse> assignmentResponses = assignments.getContent().stream().map(AssignmentResponse::new).toList();
 
         return ResponseEntity.ok(
-                new PageResponseDto<>(assignmentResponses, assignments.getPageNo(), assignments.getPageSize(), assignments.getTotalElements(), assignments.getTotalPages())
+                new APIResponse<>(true, "Assignments retrieved successfully",
+                        new PageResponseDto<>(assignmentResponses, assignments.getPageNo(), assignments.getPageSize(), assignments.getTotalElements(), assignments.getTotalPages()))
         );
     }
 
@@ -106,8 +109,10 @@ public class AssignmentController {
     )
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
-    public ResponseEntity<AssignmentResponse> createAssignment(@Validated @RequestBody CreateAssignmentRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(new AssignmentResponse(assignmentService.createAssignment(request)));
+    public ResponseEntity<APIResponse<AssignmentResponse>> createAssignment(@Validated @RequestBody CreateAssignmentRequest request) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new APIResponse<>(true, "Assignment created successfully", new AssignmentResponse(assignmentService.createAssignment(request))));
     }
 
     @Operation(
@@ -127,8 +132,9 @@ public class AssignmentController {
     )
     @PutMapping("/{assignmentId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
-    public ResponseEntity<AssignmentResponse> updateAssignment(@PathVariable String assignmentId, @Validated @RequestBody CreateAssignmentRequest request) {
-        return ResponseEntity.ok(new AssignmentResponse(assignmentService.updateAssignment(assignmentId, request)));
+    public ResponseEntity<APIResponse<AssignmentResponse>> updateAssignment(@PathVariable String assignmentId, @Validated @RequestBody CreateAssignmentRequest request) {
+        return ResponseEntity
+                .ok(new APIResponse<>(true, "Assignment updated successfully", new AssignmentResponse(assignmentService.updateAssignment(assignmentId, request))));
     }
 
     @Operation(
@@ -146,8 +152,9 @@ public class AssignmentController {
     )
     @PatchMapping("/{assignmentId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
-    public ResponseEntity<AssignmentResponse> patchAssignment(@PathVariable String assignmentId, @Validated @RequestBody PatchAssignmentRequest request) {
-        return ResponseEntity.ok(new AssignmentResponse(assignmentService.patchAssignment(assignmentId, request)));
+    public ResponseEntity<APIResponse<AssignmentResponse>> patchAssignment(@PathVariable String assignmentId, @Validated @RequestBody PatchAssignmentRequest request) {
+        return ResponseEntity
+                .ok(new APIResponse<>(true, "Assignment patched successfully", new AssignmentResponse(assignmentService.patchAssignment(assignmentId, request))));
     }
 
     @Operation(
