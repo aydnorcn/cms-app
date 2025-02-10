@@ -27,8 +27,8 @@ class CommentControllerIntegrationTest extends CommentControllerIntegrationTestS
         mockMvc.perform(MockMvcRequestBuilders.get(API_URL + "/" + comment.getId())
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(comment.getId()))
-                .andExpect(jsonPath("$.content").value(comment.getContent()));
+                .andExpect(jsonPath("$.data.id").value(comment.getId()))
+                .andExpect(jsonPath("$.data.content").value(comment.getContent()));
     }
 
     @Test
@@ -49,10 +49,10 @@ class CommentControllerIntegrationTest extends CommentControllerIntegrationTestS
         mockMvc.perform(MockMvcRequestBuilders.get(API_URL + "/posts/" + post.getId())
                         .header("Authorization", getToken(getUserEmail(comment.getCreatedBy()), password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.content[0].id").value(comment.getId()))
-                .andExpect(jsonPath("$.content[0].content").value(comment.getContent()))
-                .andExpect(jsonPath("$.totalElements").value(totalElements));
+                .andExpect(jsonPath("$.data.content").isArray())
+                .andExpect(jsonPath("$.data.content[0].id").value(comment.getId()))
+                .andExpect(jsonPath("$.data.content[0].content").value(comment.getContent()))
+                .andExpect(jsonPath("$.data.totalElements").value(totalElements));
     }
 
     @Test
@@ -74,10 +74,10 @@ class CommentControllerIntegrationTest extends CommentControllerIntegrationTestS
         mockMvc.perform(MockMvcRequestBuilders.get(API_URL + "/replies/" + parentComment.getId())
                         .header("Authorization", getToken(getUserEmail(comment.getCreatedBy()), password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.content[0].id").value(comment.getId()))
-                .andExpect(jsonPath("$.content[0].content").value(comment.getContent()))
-                .andExpect(jsonPath("$.totalElements").value(totalCount));
+                .andExpect(jsonPath("$.data.content").isArray())
+                .andExpect(jsonPath("$.data.content[0].id").value(comment.getId()))
+                .andExpect(jsonPath("$.data.content[0].content").value(comment.getContent()))
+                .andExpect(jsonPath("$.data.totalElements").value(totalCount));
     }
 
     @Test
@@ -100,7 +100,7 @@ class CommentControllerIntegrationTest extends CommentControllerIntegrationTestS
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.content").value(content));
+                .andExpect(jsonPath("$.data.content").value(content));
     }
 
     @Test
@@ -129,7 +129,7 @@ class CommentControllerIntegrationTest extends CommentControllerIntegrationTestS
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.content").value(content));
+                .andExpect(jsonPath("$.data.content").value(content));
     }
 
     @Test
@@ -157,7 +157,7 @@ class CommentControllerIntegrationTest extends CommentControllerIntegrationTestS
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").value(content));
+                .andExpect(jsonPath("$.data.content").value(content));
     }
 
     @Test
@@ -173,7 +173,7 @@ class CommentControllerIntegrationTest extends CommentControllerIntegrationTestS
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").value(content));
+                .andExpect(jsonPath("$.data.content").value(content));
     }
 
     @Test

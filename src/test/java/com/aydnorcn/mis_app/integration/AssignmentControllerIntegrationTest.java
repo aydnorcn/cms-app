@@ -26,7 +26,7 @@ class AssignmentControllerIntegrationTest extends AssignmentControllerIntegratio
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(id));
+                .andExpect(jsonPath("$.data.id").value(id));
     }
 
     @Test
@@ -46,7 +46,7 @@ class AssignmentControllerIntegrationTest extends AssignmentControllerIntegratio
                         .param("min-priority", "3")
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalElements").value(count));
+                .andExpect(jsonPath("$.data.totalElements").value(count));
     }
 
     @Test
@@ -62,7 +62,7 @@ class AssignmentControllerIntegrationTest extends AssignmentControllerIntegratio
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalElements").value(assignments.size()));
+                .andExpect(jsonPath("$.data.totalElements").value(assignments.size()));
     }
 
     @Test

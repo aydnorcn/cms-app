@@ -31,9 +31,9 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(events.get(0).getId()))
-                .andExpect(jsonPath("$.name").value(events.get(0).getName()))
-                .andExpect(jsonPath("$.description").value(events.get(0).getDescription()));
+                .andExpect(jsonPath("$.data.id").value(events.get(0).getId()))
+                .andExpect(jsonPath("$.data.name").value(events.get(0).getName()))
+                .andExpect(jsonPath("$.data.description").value(events.get(0).getDescription()));
     }
 
     @Test
@@ -43,7 +43,7 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value(MessageConstants.EVENT_NOT_FOUND));
+                .andExpect(jsonPath("$.data.message").value(MessageConstants.EVENT_NOT_FOUND));
     }
 
     @Test
@@ -52,7 +52,7 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                 .perform(MockMvcRequestBuilders.get(API_URL + '/' + events.get(0).getId())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.message").value(MessageConstants.AUTHENTICATION_REQUIRED));
+                .andExpect(jsonPath("$.data.message").value(MessageConstants.AUTHENTICATION_REQUIRED));
     }
 
     @Test
@@ -65,8 +65,8 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .param("sort-order", "asc")
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].id").value(firstEvent))
-                .andExpect(jsonPath("$.content.size()").value(events.size()));
+                .andExpect(jsonPath("$.data.content[0].id").value(firstEvent))
+                .andExpect(jsonPath("$.data.content.size()").value(events.size()));
     }
 
     @Test
@@ -75,8 +75,8 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.totalElements").value(events.size()));
+                .andExpect(jsonPath("$.data.content").isArray())
+                .andExpect(jsonPath("$.data.totalElements").value(events.size()));
     }
 
     @Test
@@ -86,7 +86,7 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalElements").value(10));
+                .andExpect(jsonPath("$.data.totalElements").value(10));
     }
 
     @Test
@@ -97,7 +97,7 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.size()").value(2));
+                .andExpect(jsonPath("$.data.content.size()").value(2));
     }
 
     @Test
@@ -110,7 +110,7 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].id").value(firstEventId));
+                .andExpect(jsonPath("$.data.content[0].id").value(firstEventId));
     }
 
     @Test
@@ -123,8 +123,8 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .header("Authorization", getToken(admin_email, password))
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value("Test Event"))
-                .andExpect(jsonPath("$.description").value("Test Description"));
+                .andExpect(jsonPath("$.data.name").value("Test Event"))
+                .andExpect(jsonPath("$.data.description").value("Test Description"));
     }
 
     @Test
@@ -163,7 +163,7 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .header("Authorization", getToken(user_email, password))
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.startTime").value(MessageConstants.START_TIME_NOT_NULL));
+                .andExpect(jsonPath("$.data.message.startTime").value(MessageConstants.START_TIME_NOT_NULL));
     }
 
     @Test
@@ -176,8 +176,8 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Updated Event"))
-                .andExpect(jsonPath("$.description").value("Updated Description"));
+                .andExpect(jsonPath("$.data.name").value("Updated Event"))
+                .andExpect(jsonPath("$.data.description").value("Updated Description"));
     }
 
     @Test
@@ -203,7 +203,7 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.startTime").value(MessageConstants.START_TIME_NOT_NULL));
+                .andExpect(jsonPath("$.data.message.startTime").value(MessageConstants.START_TIME_NOT_NULL));
     }
 
     @Test
@@ -237,10 +237,10 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Patch Name"))
-                .andExpect(jsonPath("$.description").value(events.get(0).getDescription()))
-                .andExpect(jsonPath("$.location").value(events.get(0).getLocation()))
-                .andExpect(jsonPath("$.date").value(events.get(0).getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))));
+                .andExpect(jsonPath("$.data.name").value("Patch Name"))
+                .andExpect(jsonPath("$.data.description").value(events.get(0).getDescription()))
+                .andExpect(jsonPath("$.data.location").value(events.get(0).getLocation()))
+                .andExpect(jsonPath("$.data.date").value(events.get(0).getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))));
     }
 
     @Test
@@ -264,10 +264,10 @@ class EventControllerIntegrationTest extends EventControllerIntegrationTestSuppo
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(events.get(0).getName()))
-                .andExpect(jsonPath("$.description").value(events.get(0).getDescription()))
-                .andExpect(jsonPath("$.location").value(events.get(0).getLocation()))
-                .andExpect(jsonPath("$.date").value(events.get(0).getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))));
+                .andExpect(jsonPath("$.data.name").value(events.get(0).getName()))
+                .andExpect(jsonPath("$.data.description").value(events.get(0).getDescription()))
+                .andExpect(jsonPath("$.data.location").value(events.get(0).getLocation()))
+                .andExpect(jsonPath("$.data.date").value(events.get(0).getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))));
     }
 
     @Test

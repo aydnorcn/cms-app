@@ -28,8 +28,8 @@ class PostControllerIntegrationTest extends PostControllerIntegrationTestSupport
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(post.getId()))
-                .andExpect(jsonPath("$.title").value(post.getTitle()));
+                .andExpect(jsonPath("$.data.id").value(post.getId()))
+                .andExpect(jsonPath("$.data.title").value(post.getTitle()));
     }
 
     @Test
@@ -50,8 +50,8 @@ class PostControllerIntegrationTest extends PostControllerIntegrationTestSupport
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(post.getId()))
-                .andExpect(jsonPath("$.title").value(post.getTitle()));
+                .andExpect(jsonPath("$.data.id").value(post.getId()))
+                .andExpect(jsonPath("$.data.title").value(post.getTitle()));
     }
 
     @Test
@@ -76,8 +76,8 @@ class PostControllerIntegrationTest extends PostControllerIntegrationTestSupport
                         .header("Authorization", getToken(user_email, password))
                         .param("author", "user-4"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.totalElements").value(1));
+                .andExpect(jsonPath("$.data.content").isArray())
+                .andExpect(jsonPath("$.data.totalElements").value(1));
     }
 
     @Test
@@ -88,8 +88,8 @@ class PostControllerIntegrationTest extends PostControllerIntegrationTestSupport
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.totalElements").value(approvedPostCount));
+                .andExpect(jsonPath("$.data.content").isArray())
+                .andExpect(jsonPath("$.data.totalElements").value(approvedPostCount));
     }
 
     @Test
@@ -98,8 +98,8 @@ class PostControllerIntegrationTest extends PostControllerIntegrationTestSupport
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.totalElements").value(posts.size()));
+                .andExpect(jsonPath("$.data.content").isArray())
+                .andExpect(jsonPath("$.data.totalElements").value(posts.size()));
     }
 
     @Test
@@ -109,8 +109,8 @@ class PostControllerIntegrationTest extends PostControllerIntegrationTestSupport
                         .header("Authorization", getToken(user_email, password))
                         .param("author", "user-10"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.totalElements").value(0));
+                .andExpect(jsonPath("$.data.content").isArray())
+                .andExpect(jsonPath("$.data.totalElements").value(0));
     }
 
     @Test
@@ -126,9 +126,9 @@ class PostControllerIntegrationTest extends PostControllerIntegrationTestSupport
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.title").value(title))
-                .andExpect(jsonPath("$.content").value(content))
-                .andExpect(jsonPath("$.category.id").value(categoryId));
+                .andExpect(jsonPath("$.data.title").value(title))
+                .andExpect(jsonPath("$.data.content").value(content))
+                .andExpect(jsonPath("$.data.category.id").value(categoryId));
     }
 
     @Test
@@ -258,9 +258,9 @@ class PostControllerIntegrationTest extends PostControllerIntegrationTestSupport
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value(title))
-                .andExpect(jsonPath("$.content").value(content))
-                .andExpect(jsonPath("$.status").value("APPROVED"));
+                .andExpect(jsonPath("$.data.title").value(title))
+                .andExpect(jsonPath("$.data.content").value(content))
+                .andExpect(jsonPath("$.data.status").value("APPROVED"));
     }
 
     @Test
@@ -277,7 +277,7 @@ class PostControllerIntegrationTest extends PostControllerIntegrationTestSupport
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken(post.getAuthor().getUserCredential().getEmail(), password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("PENDING"));
+                .andExpect(jsonPath("$.data.status").value("PENDING"));
     }
 
     @Test
@@ -335,7 +335,7 @@ class PostControllerIntegrationTest extends PostControllerIntegrationTestSupport
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("APPROVED"));
+                .andExpect(jsonPath("$.data.status").value("APPROVED"));
     }
 
     @Test
@@ -348,7 +348,7 @@ class PostControllerIntegrationTest extends PostControllerIntegrationTestSupport
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value(MessageConstants.POST_ALREADY_APPROVED));
+                .andExpect(jsonPath("$.data.message").value(MessageConstants.POST_ALREADY_APPROVED));
     }
 
     @Test

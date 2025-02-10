@@ -26,8 +26,8 @@ class OptionControllerIntegrationTest extends OptionControllerIntegrationTestSup
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(option.getId()))
-                .andExpect(jsonPath("$.text").value(option.getText()));
+                .andExpect(jsonPath("$.data.id").value(option.getId()))
+                .andExpect(jsonPath("$.data.text").value(option.getText()));
     }
 
     @Test
@@ -59,7 +59,7 @@ class OptionControllerIntegrationTest extends OptionControllerIntegrationTestSup
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.text").value("New Option"));
+                .andExpect(jsonPath("$.data.text").value("New Option"));
     }
 
     @Test
@@ -117,7 +117,7 @@ class OptionControllerIntegrationTest extends OptionControllerIntegrationTestSup
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.text").value(request.getOptionText()));
+                .andExpect(jsonPath("$.data.text").value(request.getOptionText()));
     }
 
     @Test
@@ -160,7 +160,7 @@ class OptionControllerIntegrationTest extends OptionControllerIntegrationTestSup
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.optionText").value(MessageConstants.OPTION_TEXT_NOT_BLANK));
+                .andExpect(jsonPath("$.data.message.optionText").value(MessageConstants.OPTION_TEXT_NOT_BLANK));
     }
 
     @Test

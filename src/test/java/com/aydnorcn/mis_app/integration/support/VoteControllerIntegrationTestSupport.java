@@ -48,6 +48,6 @@ public abstract class VoteControllerIntegrationTestSupport extends TestUtils {
                 .getResponse()
                 .getContentAsString();
 
-        return JsonPath.read(response, "$.id");
+        return JsonPath.read(response, "$.data.id");
     }
 }

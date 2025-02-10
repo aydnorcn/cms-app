@@ -45,7 +45,7 @@ class VoteControllerIntegrationTest extends VoteControllerIntegrationTestSupport
                         .header("Authorization", getToken(user_email, password))
                         .param("option-id", options.get(0).getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.size()").value(votes.size() + 1));
+                .andExpect(jsonPath("$.data.content.size()").value(votes.size() + 1));
     }
 
 
@@ -55,7 +55,7 @@ class VoteControllerIntegrationTest extends VoteControllerIntegrationTestSupport
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.size()").value(votes.size()));
+                .andExpect(jsonPath("$.data.content.size()").value(votes.size()));
     }
 
     @Test
@@ -84,15 +84,15 @@ class VoteControllerIntegrationTest extends VoteControllerIntegrationTestSupport
                         .header("Authorization", token)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.optionId").value(options.get(1).getId()))
-                .andExpect(jsonPath("$.pollId").value(options.get(1).getPoll().getId()));
+                .andExpect(jsonPath("$.data.optionId").value(options.get(1).getId()))
+                .andExpect(jsonPath("$.data..pollId").value(options.get(1).getPoll().getId()));
 
         mockMvc.perform(MockMvcRequestBuilders.get(API_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token)
                         .param("option-id", options.get(0).getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.size()").value(0));
+                .andExpect(jsonPath("$.data..content.size()").value(0));
     }
 
     @Test
@@ -117,7 +117,7 @@ class VoteControllerIntegrationTest extends VoteControllerIntegrationTestSupport
                         .header("Authorization", token)
                         .param("poll-id", multipleChoicePoll.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.size()").value(2));
+                .andExpect(jsonPath("$.data..content.size()").value(2));
     }
 
     @Test

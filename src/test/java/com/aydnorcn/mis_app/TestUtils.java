@@ -57,7 +57,7 @@ public class TestUtils {
                 .getContentAsString();
 
         last_login_email = email;
-        token = JsonPath.read(response, "$.token");
+        token = JsonPath.read(response, "$.accessToken");
         return String.format("Bearer %s", token);
     }
 }

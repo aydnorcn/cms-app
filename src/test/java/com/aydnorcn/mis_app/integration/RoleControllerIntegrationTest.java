@@ -25,8 +25,8 @@ class RoleControllerIntegrationTest extends RoleControllerIntegrationTestSupport
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(role.getId()))
-                .andExpect(jsonPath("$.name").value(role.getName()));
+                .andExpect(jsonPath("$.data.id").value(role.getId()))
+                .andExpect(jsonPath("$.data.name").value(role.getName()));
     }
 
     @Test
@@ -56,7 +56,7 @@ class RoleControllerIntegrationTest extends RoleControllerIntegrationTestSupport
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("ROLE_" + roleName.toUpperCase()));
+                .andExpect(jsonPath("$.data.name").value("ROLE_" + roleName.toUpperCase()));
     }
 
     @Test
@@ -80,7 +80,7 @@ class RoleControllerIntegrationTest extends RoleControllerIntegrationTestSupport
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value("ROLE_" + request.getName().toUpperCase()));
+                .andExpect(jsonPath("$.data.name").value("ROLE_" + request.getName().toUpperCase()));
     }
 
     @Test
@@ -122,7 +122,7 @@ class RoleControllerIntegrationTest extends RoleControllerIntegrationTestSupport
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("ROLE_" + request.getName().toUpperCase()));
+                .andExpect(jsonPath("$.data.name").value("ROLE_" + request.getName().toUpperCase()));
     }
 
     @Test

@@ -4,6 +4,7 @@ import com.aydnorcn.mis_app.dto.auth.LoginRequest;
 import com.aydnorcn.mis_app.dto.auth.LoginResponse;
 import com.aydnorcn.mis_app.dto.auth.RegisterRequest;
 import com.aydnorcn.mis_app.dto.auth.RegisterResponse;
+import com.aydnorcn.mis_app.entity.RefreshToken;
 import com.aydnorcn.mis_app.entity.Role;
 import com.aydnorcn.mis_app.exception.AlreadyExistsException;
 import com.aydnorcn.mis_app.jwt.JwtTokenProvider;
@@ -43,6 +44,9 @@ class AuthServiceTest {
     private RoleRepository roleRepository;
 
     @Mock
+    private RefreshTokenService refreshTokenService;
+
+    @Mock
     private PasswordEncoder passwordEncoder;
 
     @InjectMocks
@@ -56,6 +60,7 @@ class AuthServiceTest {
 
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
         when(jwtTokenProvider.generateToken(authentication)).thenReturn("valid-token");
+        when(refreshTokenService.createRefreshToken(request.getEmail())).thenReturn(new RefreshToken());
 
         LoginResponse response = authService.login(request);
 
@@ -77,6 +82,7 @@ class AuthServiceTest {
         Authentication authentication = mock(Authentication.class);
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
         when(jwtTokenProvider.generateToken(authentication)).thenReturn("valid-token");
+        when(refreshTokenService.createRefreshToken(request.getEmail())).thenReturn(new RefreshToken());
 
         authService.login(request);
 

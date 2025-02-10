@@ -28,9 +28,9 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(polls.get(0).getId()))
-                .andExpect(jsonPath("$.title").value(polls.get(0).getTitle()))
-                .andExpect(jsonPath("$.description").value(polls.get(0).getDescription()));
+                .andExpect(jsonPath("$.data.id").value(polls.get(0).getId()))
+                .andExpect(jsonPath("$.data.title").value(polls.get(0).getTitle()))
+                .andExpect(jsonPath("$.data.description").value(polls.get(0).getDescription()));
     }
 
     @Test
@@ -59,9 +59,9 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .param("sort-by", "name")
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].title").value(polls.get(0).getTitle()))
-                .andExpect(jsonPath("$.content[0].description").value(polls.get(0).getDescription()))
-                .andExpect(jsonPath("$.content.size()").value(10));
+                .andExpect(jsonPath("$.data.content[0].title").value(polls.get(0).getTitle()))
+                .andExpect(jsonPath("$.data.content[0].description").value(polls.get(0).getDescription()))
+                .andExpect(jsonPath("$.data.content.size()").value(10));
     }
 
     @Test
@@ -70,7 +70,7 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.size()").value(polls.size()));
+                .andExpect(jsonPath("$.data.content.size()").value(polls.size()));
     }
 
     @Test
@@ -80,7 +80,7 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .param("sort-by", "invalid")
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalElements").value(polls.size()));
+                .andExpect(jsonPath("$.data.totalElements").value(polls.size()));
     }
 
     @Test
@@ -93,8 +93,8 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .param("poll-type", "multiple")
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].title").value(pollsArray[0].getTitle()))
-                .andExpect(jsonPath("$.content.size()").value(pollsArray.length));
+                .andExpect(jsonPath("$.data.content[0].title").value(pollsArray[0].getTitle()))
+                .andExpect(jsonPath("$.data.content.size()").value(pollsArray.length));
     }
 
     @Test
@@ -108,8 +108,8 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .param("sort-order", "asc")
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].title").value(firstPoll))
-                .andExpect(jsonPath("$.totalElements").value(polls.size()));
+                .andExpect(jsonPath("$.data.content[0].title").value(firstPoll))
+                .andExpect(jsonPath("$.data.totalElements").value(polls.size()));
     }
 
     @Test
@@ -122,8 +122,8 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.title").value(request.getTitle()))
-                .andExpect(jsonPath("$.description").value(request.getDescription()));
+                .andExpect(jsonPath("$.data.title").value(request.getTitle()))
+                .andExpect(jsonPath("$.data.description").value(request.getDescription()));
     }
 
     @Test
@@ -149,8 +149,8 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.title").value(MessageConstants.TITLE_NOT_BLANK))
-                .andExpect(jsonPath("$.description").value(MessageConstants.DESCRIPTION_NOT_BLANK));
+                .andExpect(jsonPath("$.data.message.title").value(MessageConstants.TITLE_NOT_BLANK))
+                .andExpect(jsonPath("$.data.message.description").value(MessageConstants.DESCRIPTION_NOT_BLANK));
     }
 
     @Test
@@ -163,8 +163,8 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value(request.getTitle()))
-                .andExpect(jsonPath("$.description").value(request.getDescription()));
+                .andExpect(jsonPath("$.data.title").value(request.getTitle()))
+                .andExpect(jsonPath("$.data.description").value(request.getDescription()));
     }
 
     @Test
@@ -190,8 +190,8 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.title").value(MessageConstants.TITLE_NOT_BLANK))
-                .andExpect(jsonPath("$.description").value(MessageConstants.DESCRIPTION_NOT_BLANK));
+                .andExpect(jsonPath("$.data.message.title").value(MessageConstants.TITLE_NOT_BLANK))
+                .andExpect(jsonPath("$.data.message.description").value(MessageConstants.DESCRIPTION_NOT_BLANK));
     }
 
     @Test
@@ -204,7 +204,7 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value(MessageConstants.POLL_NOT_FOUND));
+                .andExpect(jsonPath("$.data.message").value(MessageConstants.POLL_NOT_FOUND));
     }
 
     @Test
@@ -214,7 +214,7 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value(MessageConstants.REQUEST_BODY_MISSING));
+                .andExpect(jsonPath("$.data.message").value(MessageConstants.REQUEST_BODY_MISSING));
     }
 
     @Test
@@ -227,8 +227,8 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value(request.getTitle()))
-                .andExpect(jsonPath("$.description").value(polls.get(0).getDescription()));
+                .andExpect(jsonPath("$.data.title").value(request.getTitle()))
+                .andExpect(jsonPath("$.data.description").value(polls.get(0).getDescription()));
     }
 
     @Test
@@ -241,7 +241,7 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.message").value(MessageConstants.UNAUTHORIZED_ACTION));
+                .andExpect(jsonPath("$.data.message").value(MessageConstants.UNAUTHORIZED_ACTION));
     }
 
     @Test
@@ -254,8 +254,8 @@ class PollControllerIntegrationTest extends PollControllerIntegrationTestSupport
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", getToken(admin_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value(polls.get(0).getTitle()))
-                .andExpect(jsonPath("$.description").value(polls.get(0).getDescription()));
+                .andExpect(jsonPath("$.data.title").value(polls.get(0).getTitle()))
+                .andExpect(jsonPath("$.data.description").value(polls.get(0).getDescription()));
     }
 
     @Test

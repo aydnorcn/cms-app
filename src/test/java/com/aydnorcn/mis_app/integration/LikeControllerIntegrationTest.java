@@ -28,7 +28,7 @@ class LikeControllerIntegrationTest extends LikeControllerIntegrationTestSupport
         mockMvc.perform(MockMvcRequestBuilders.get(API_URL + '/' + likeId)
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.post.likeCount").value(1));
+                .andExpect(jsonPath("$.data.post.likeCount").value(1));
     }
 
     @Test
@@ -49,7 +49,7 @@ class LikeControllerIntegrationTest extends LikeControllerIntegrationTestSupport
         mockMvc.perform(MockMvcRequestBuilders.get(API_URL + "/posts/" + post.getId())
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].post.likeCount").value(2));
+                .andExpect(jsonPath("$.data.content[0].post.likeCount").value(2));
     }
 
     @Test
@@ -67,7 +67,7 @@ class LikeControllerIntegrationTest extends LikeControllerIntegrationTestSupport
         mockMvc.perform(post(API_URL + "/posts/" + post.getId())
                         .header("Authorization", getToken(user_email, password)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.post.likeCount").value(1));
+                .andExpect(jsonPath("$.data.post.likeCount").value(1));
     }
 
     @Test
@@ -126,6 +126,6 @@ class LikeControllerIntegrationTest extends LikeControllerIntegrationTestSupport
                 .getResponse()
                 .getContentAsString();
 
-        return JsonPath.read(response, "$.id");
+        return JsonPath.read(response, "$.data.id");
     }
 }
