@@ -60,7 +60,7 @@ class AuthServiceTest {
         LoginResponse response = authService.login(request);
 
         assertEquals("valid@example.com", response.email());
-        assertEquals("valid-token", response.token());
+        assertEquals("valid-token", response.accessToken());
     }
 
     @Test

@@ -36,6 +36,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
 
     private final RoleRepository roleRepository;
+    private final RefreshTokenService refreshTokenService;
 
     public LoginResponse login(LoginRequest request) {
         Authentication authentication;
@@ -47,7 +48,8 @@ public class AuthService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtTokenProvider.generateToken(authentication);
-        return new LoginResponse(request.getEmail(), token);
+        String refreshToken = refreshTokenService.createRefreshToken(request.getEmail()).getToken();
+        return new LoginResponse(request.getEmail(), token, refreshToken);
     }
 
     public RegisterResponse register(RegisterRequest request) {
