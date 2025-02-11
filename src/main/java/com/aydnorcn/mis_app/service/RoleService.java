@@ -7,6 +7,9 @@ import com.aydnorcn.mis_app.exception.ResourceNotFoundException;
 import com.aydnorcn.mis_app.repository.RoleRepository;
 import com.aydnorcn.mis_app.utils.MessageConstants;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +22,7 @@ public class RoleService {
     private final RoleRepository roleRepository;
     private static final String ROLE_PREFIX = "ROLE_";
 
+    @Cacheable(value = "role", key = "#roleId")
     public Role getRoleById(String roleId) {
         return roleRepository.findById(roleId).orElseThrow(() -> new ResourceNotFoundException(MessageConstants.ROLE_NOT_FOUND));
     }
@@ -39,6 +43,7 @@ public class RoleService {
         return roleRepository.save(role);
     }
 
+    @CachePut(value = "role", key = "#roleId")
     public Role updateRole(String roleId, CreateRoleRequestDto dto) {
         validateRoleNameDoesNotExist(dto);
 
@@ -50,6 +55,7 @@ public class RoleService {
         return roleRepository.save(updateRole);
     }
 
+    @CacheEvict(value = "role", key = "#roleId")
     public void deleteRole(String roleId) {
         Role role = getRoleById(roleId);
         roleRepository.delete(role);

@@ -12,9 +12,11 @@ import com.aydnorcn.mis_app.repository.AssignmentRepository;
 import com.aydnorcn.mis_app.utils.MessageConstants;
 import com.aydnorcn.mis_app.utils.params.AssignmentParams;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -29,23 +31,20 @@ public class AssignmentService {
     private final EventService eventService;
     private final UserService userService;
 
+    @Cacheable(value = "assignment", key = "#assignmentId")
     public Assignment getAssignmentById(String assignmentId) {
         return assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new ResourceNotFoundException(MessageConstants.ASSIGNMENT_NOT_FOUND));
     }
 
-    public PageResponseDto<Assignment> getAssignments(AssignmentParams params){
+    public PageResponseDto<Assignment> getAssignments(AssignmentParams params) {
         var assignedTo = (params.getCreatedBy() == null) ? null : userService.getUserById(params.getAssignedTo());
         var event = (params.getEventId() == null) ? null : eventService.getEventById(params.getEventId());
         var createdBy = (params.getCreatedBy() == null) ? null : userService.getUserById(params.getCreatedBy());
 
         Specification<Assignment> specification = AssignmentFilter.filter(assignedTo, event, params.getIsCompleted(), params.getMinPriority(), params.getMaxPriority(), params.getCreatedAfter(), params.getCreatedBefore(), createdBy);
 
-        Sort sort = params.getSortOrder().equalsIgnoreCase("asc")
-                ? Sort.by(params.getSortBy()).ascending()
-                : Sort.by(params.getSortBy()).descending();
-
-        Page<Assignment> page = assignmentRepository.findAll(specification, PageRequest.of(params.getPageNo(), params.getPageSize(), sort));
+        Page<Assignment> page = assignmentRepository.findAll(specification, PageRequest.of(params.getPageNo(), params.getPageSize(), params.getSort()));
 
         return new PageResponseDto<>(page);
     }
@@ -57,6 +56,7 @@ public class AssignmentService {
         return assignmentRepository.save(assignment);
     }
 
+    @CachePut(value = "assignment", key = "#assignmentId")
     public Assignment updateAssignment(String assignmentId, CreateAssignmentRequest request) {
         Assignment assignment = getAssignmentById(assignmentId);
 
@@ -65,6 +65,7 @@ public class AssignmentService {
         return assignmentRepository.save(assignment);
     }
 
+    @CachePut(value = "assignment", key = "#assignmentId")
     public Assignment patchAssignment(String assignmentId, PatchAssignmentRequest request) {
         Assignment assignment = getAssignmentById(assignmentId);
 
@@ -73,6 +74,7 @@ public class AssignmentService {
         return assignmentRepository.save(assignment);
     }
 
+    @CacheEvict(value = "assignment", key = "#assignmentId")
     public void deleteAssignment(String assignmentId) {
         Assignment assignment = getAssignmentById(assignmentId);
         assignmentRepository.delete(assignment);

@@ -16,6 +16,9 @@ import com.aydnorcn.mis_app.utils.MessageConstants;
 import com.aydnorcn.mis_app.utils.PostStatus;
 import com.aydnorcn.mis_app.utils.params.PostParams;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -33,6 +36,7 @@ public class PostService {
     private final UserService userService;
     private final UserContextService userContextService;
 
+    @Cacheable(value = "post", key = "#postId")
     public Post getPostById(String postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException(MessageConstants.POST_NOT_FOUND));
@@ -69,6 +73,7 @@ public class PostService {
         return postRepository.save(post);
     }
 
+    @CachePut(value = "post", key = "#postId")
     public Post updatePost(String postId, CreatePostRequest request) {
         Post post = getPostById(postId);
 
@@ -77,6 +82,7 @@ public class PostService {
         return postRepository.save(post);
     }
 
+    @CachePut(value = "post", key = "#postId")
     public Post patchPost(String postId, PatchPostRequest request) {
         Post post = getPostById(postId);
 
@@ -97,6 +103,7 @@ public class PostService {
         return postRepository.save(post);
     }
 
+    @CacheEvict(value = "post", key = "#postId")
     public void deletePost(String postId) {
         Post post = getPostById(postId);
         postRepository.delete(post);

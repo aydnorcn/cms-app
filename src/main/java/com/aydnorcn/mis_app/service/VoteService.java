@@ -1,6 +1,5 @@
 package com.aydnorcn.mis_app.service;
 
-import com.aydnorcn.mis_app.strategy.CreateVoteStrategy;
 import com.aydnorcn.mis_app.dto.PageResponseDto;
 import com.aydnorcn.mis_app.dto.vote.VoteRequest;
 import com.aydnorcn.mis_app.entity.Option;
@@ -9,6 +8,7 @@ import com.aydnorcn.mis_app.exception.APIException;
 import com.aydnorcn.mis_app.exception.ResourceNotFoundException;
 import com.aydnorcn.mis_app.filter.VoteFilter;
 import com.aydnorcn.mis_app.repository.VoteRepository;
+import com.aydnorcn.mis_app.strategy.CreateVoteStrategy;
 import com.aydnorcn.mis_app.utils.MessageConstants;
 import com.aydnorcn.mis_app.utils.PollType;
 import com.aydnorcn.mis_app.utils.params.VoteParams;
@@ -16,7 +16,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -47,11 +46,7 @@ public class VoteService {
         Specification<Vote> specification = VoteFilter.filter(user, option, poll,
                 params.getCreatedAfter(), params.getCreatedBefore(), params.getIsActive());
 
-        Sort sort = params.getSortOrder().equalsIgnoreCase("asc")
-                ? Sort.by(params.getSortBy()).ascending()
-                : Sort.by(params.getSortBy()).descending();
-
-        Page<Vote> page = voteRepository.findAll(specification, PageRequest.of(params.getPageNo(), params.getPageSize(), sort));
+        Page<Vote> page = voteRepository.findAll(specification, PageRequest.of(params.getPageNo(), params.getPageSize(), params.getSort()));
 
         return new PageResponseDto<>(page);
     }

@@ -10,9 +10,11 @@ import com.aydnorcn.mis_app.repository.EventRepository;
 import com.aydnorcn.mis_app.utils.MessageConstants;
 import com.aydnorcn.mis_app.utils.params.EventParams;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,7 @@ public class EventService {
     private final EventRepository eventRepository;
     private final UserService userService;
 
+    @Cacheable(value = "event", key = "#eventId")
     public Event getEventById(String eventId) {
         return eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException(MessageConstants.EVENT_NOT_FOUND));
@@ -33,11 +36,7 @@ public class EventService {
 
         Specification<Event> specification = EventFilter.filter(params.getLocation(), params.getDate(), params.getStartAfter(), params.getEndBefore(), params.getStatus(), user);
 
-        Sort sort = params.getSortOrder().equalsIgnoreCase("asc")
-                ? Sort.by(params.getSortBy()).ascending()
-                : Sort.by(params.getSortBy()).descending();
-
-        Page<Event> page = eventRepository.findAll(specification, PageRequest.of(params.getPageNo(), params.getPageSize(), sort));
+        Page<Event> page = eventRepository.findAll(specification, PageRequest.of(params.getPageNo(), params.getPageSize(), params.getSort()));
 
         return new PageResponseDto<>(page);
     }
@@ -50,6 +49,8 @@ public class EventService {
         return eventRepository.save(event);
     }
 
+
+    @CachePut(value = "event", key = "#eventId")
     public Event updateEvent(String eventId, CreateEventRequest request) {
         Event updateEvent = getEventById(eventId);
 
@@ -58,6 +59,7 @@ public class EventService {
         return eventRepository.save(updateEvent);
     }
 
+    @CachePut(value = "event", key = "#eventId")
     public Event patchEvent(String eventId, PatchEventRequest request) {
         Event updateEvent = getEventById(eventId);
 
@@ -66,6 +68,7 @@ public class EventService {
         return eventRepository.save(updateEvent);
     }
 
+    @CacheEvict(value = "event", key = "#eventId")
     public void deleteEvent(String eventId) {
         Event event = getEventById(eventId);
         eventRepository.delete(event);

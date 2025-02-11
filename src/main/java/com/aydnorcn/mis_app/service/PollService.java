@@ -11,6 +11,8 @@ import com.aydnorcn.mis_app.repository.PollRepository;
 import com.aydnorcn.mis_app.utils.MessageConstants;
 import com.aydnorcn.mis_app.utils.params.PollParams;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -25,6 +27,7 @@ public class PollService {
     private final PollRepository pollRepository;
     private final UserService userService;
 
+    @Cacheable(value = "poll", key = "#pollId")
     public Poll getPollById(String pollId) {
         return pollRepository.findById(pollId)
                 .orElseThrow(() -> new ResourceNotFoundException(MessageConstants.POLL_NOT_FOUND));
@@ -35,7 +38,7 @@ public class PollService {
         Specification<Poll> specification = PollFilter.filter(params.getType(), params.getMinOptionCount(), params.getMaxOptionCount(),
                 params.getCreatedAfter(), params.getCreatedBefore(), (params.getCreatedBy() == null ? null : userService.getUserById(params.getCreatedBy())));
 
-        Page<Poll> page = pollRepository.findAll(specification, PageRequest.of(params.getPageNo(), params.getPageSize()));
+        Page<Poll> page = pollRepository.findAll(specification, PageRequest.of(params.getPageNo(), params.getPageSize(), params.getSort()));
 
         return new PageResponseDto<>(page);
     }
@@ -48,6 +51,7 @@ public class PollService {
         return pollRepository.saveAndFlush(poll);
     }
 
+    @CachePut(value = "poll", key = "#pollId")
     public Poll updatePoll(String pollId, CreatePollRequest request) {
         Poll poll = getPollById(pollId);
 
@@ -56,6 +60,7 @@ public class PollService {
         return pollRepository.saveAndFlush(poll);
     }
 
+    @CachePut(value = "poll", key = "#pollId")
     public Poll patchPoll(String pollId, PatchPollRequest request) {
         Poll poll = getPollById(pollId);
 
@@ -64,6 +69,7 @@ public class PollService {
         return pollRepository.save(poll);
     }
 
+    @CachePut(value = "poll", key = "#pollId")
     public void deletePoll(String pollId) {
         Poll poll = getPollById(pollId);
         pollRepository.delete(poll);
