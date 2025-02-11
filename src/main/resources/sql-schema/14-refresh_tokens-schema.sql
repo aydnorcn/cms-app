@@ -1,4 +1,4 @@
-CREATE TABLE refresh_tokens
+CREATE TABLE IF NOT EXISTS refresh_tokens
 (
     id              VARCHAR(255) PRIMARY KEY,
     token           VARCHAR(255) NOT NULL UNIQUE,
