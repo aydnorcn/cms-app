@@ -1,5 +1,7 @@
 package com.aydnorcn.mis_app.service;
 
+import com.aydnorcn.mis_app.dto.auth.LoginResponse;
+import com.aydnorcn.mis_app.dto.auth.RefreshTokenRequest;
 import com.aydnorcn.mis_app.entity.RefreshToken;
 import com.aydnorcn.mis_app.entity.User;
 import com.aydnorcn.mis_app.exception.ResourceNotFoundException;
@@ -7,11 +9,9 @@ import com.aydnorcn.mis_app.jwt.JwtTokenProvider;
 import com.aydnorcn.mis_app.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -65,15 +65,15 @@ public class RefreshTokenService {
         refreshTokenRepository.delete(token);
     }
 
-    public Map<String, String> verifyAndCreateNewAccessToken(String refreshToken) {
-        RefreshToken currentToken = verifyRefreshToken(refreshToken);
+    public LoginResponse verifyAndCreateNewAccessToken(RefreshTokenRequest request) {
+        RefreshToken currentToken = verifyRefreshToken(request.getRefreshToken());
         String userEmail = currentToken.getUser().getUserCredential().getEmail();
 
-        deleteRefreshToken(refreshToken);
+        deleteRefreshToken(request.getRefreshToken());
 
-        String accessToken = jwtTokenProvider.generateToken(SecurityContextHolder.getContext().getAuthentication());
+        String accessToken = jwtTokenProvider.generateToken(userEmail);
         String newRefreshToken = createRefreshToken(userEmail).getToken();
 
-        return Map.of("accessToken", accessToken, "refreshToken", newRefreshToken);
+        return new LoginResponse(userEmail, accessToken, newRefreshToken);
     }
 }
