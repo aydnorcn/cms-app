@@ -1,4 +1,4 @@
-package com.aydnorcn.mis_app.utils.params;
+package com.aydnorcn.mis_app.utils.params.commons;
 
 import lombok.Getter;
 import lombok.Setter;

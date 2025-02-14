@@ -1,5 +1,6 @@
 package com.aydnorcn.mis_app.utils.params;
 
+import com.aydnorcn.mis_app.utils.params.commons.PaginationParams;
 import lombok.Getter;
 import lombok.Setter;
 

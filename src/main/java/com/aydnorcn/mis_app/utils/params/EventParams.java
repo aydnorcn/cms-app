@@ -1,6 +1,7 @@
 package com.aydnorcn.mis_app.utils.params;
 
 import com.aydnorcn.mis_app.utils.EventStatus;
+import com.aydnorcn.mis_app.utils.params.commons.PaginationParams;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -11,9 +12,11 @@ import java.util.Map;
 
 @Getter
 @Setter
-public class EventParams extends PaginationParams{
+public class EventParams extends PaginationParams {
 
     private String location = null;
+
+    @DateTimeFormat(pattern = "yyyy.MM.dd")
     private LocalDate date = null;
 
     @DateTimeFormat(pattern = "HH:mm")

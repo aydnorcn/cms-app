@@ -1,9 +1,10 @@
 package com.aydnorcn.mis_app.utils.params;
 
+import com.aydnorcn.mis_app.utils.params.commons.CreatedDateRangeParams;
+import com.aydnorcn.mis_app.utils.params.commons.PaginationParams;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Getter;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 
 @Getter
@@ -15,25 +16,19 @@ public class AssignmentParams extends PaginationParams {
     private Integer minPriority = null;
     private Integer maxPriority = null;
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private LocalDateTime createdAfter = null;
-
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private LocalDateTime createdBefore = null;
+    @JsonUnwrapped
+    private CreatedDateRangeParams createdDateRangeParams;
 
     private String createdBy = null;
 
     public AssignmentParams(Map<String, Object> params) {
         super(params);
+        createdDateRangeParams = new CreatedDateRangeParams(params);
         if (params.containsKey("assigned-to")) assignedTo = (String) params.get("assigned-to");
         if (params.containsKey("event-id")) eventId = (String) params.get("event-id");
         if (params.containsKey("is-completed")) isCompleted = Boolean.parseBoolean((String) params.get("is-completed"));
         if (params.containsKey("min-priority")) minPriority = Integer.parseInt((String) params.get("min-priority"));
         if (params.containsKey("max-priority")) maxPriority = Integer.parseInt((String) params.get("max-priority"));
-        if (params.containsKey("created-after"))
-            createdAfter = LocalDateTime.parse((String) params.get("created-after"));
-        if (params.containsKey("created-before"))
-            createdBefore = LocalDateTime.parse((String) params.get("created-before"));
         if (params.containsKey("created-by")) createdBy = (String) params.get("created-by");
     }
 }

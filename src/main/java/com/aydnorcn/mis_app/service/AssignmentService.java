@@ -42,7 +42,7 @@ public class AssignmentService {
         var event = (params.getEventId() == null) ? null : eventService.getEventById(params.getEventId());
         var createdBy = (params.getCreatedBy() == null) ? null : userService.getUserById(params.getCreatedBy());
 
-        Specification<Assignment> specification = AssignmentFilter.filter(assignedTo, event, params.getIsCompleted(), params.getMinPriority(), params.getMaxPriority(), params.getCreatedAfter(), params.getCreatedBefore(), createdBy);
+        Specification<Assignment> specification = AssignmentFilter.filter(assignedTo, event, params.getIsCompleted(), params.getMinPriority(), params.getMaxPriority(), params.getCreatedDateRangeParams().getCreatedAfter(), params.getCreatedDateRangeParams().getCreatedBefore(), createdBy);
 
         Page<Assignment> page = assignmentRepository.findAll(specification, PageRequest.of(params.getPageNo(), params.getPageSize(), params.getSort()));
 

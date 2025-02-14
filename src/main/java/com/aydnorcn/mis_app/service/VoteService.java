@@ -44,7 +44,7 @@ public class VoteService {
         var poll = (params.getPollId() == null) ? null : pollService.getPollById(params.getPollId());
 
         Specification<Vote> specification = VoteFilter.filter(user, option, poll,
-                params.getCreatedAfter(), params.getCreatedBefore(), params.getIsActive());
+                params.getCreatedDateRangeParams().getCreatedAfter(), params.getCreatedDateRangeParams().getCreatedBefore(), params.getIsActive());
 
         Page<Vote> page = voteRepository.findAll(specification, PageRequest.of(params.getPageNo(), params.getPageSize(), params.getSort()));
 

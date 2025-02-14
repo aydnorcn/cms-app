@@ -36,7 +36,7 @@ public class PollService {
     public PageResponseDto<Poll> getPolls(PollParams params) {
 
         Specification<Poll> specification = PollFilter.filter(params.getType(), params.getMinOptionCount(), params.getMaxOptionCount(),
-                params.getCreatedAfter(), params.getCreatedBefore(), (params.getCreatedBy() == null ? null : userService.getUserById(params.getCreatedBy())));
+                params.getCreatedDateRangeParams().getCreatedAfter(), params.getCreatedDateRangeParams().getCreatedBefore(), (params.getCreatedBy() == null ? null : userService.getUserById(params.getCreatedBy())));
 
         Page<Poll> page = pollRepository.findAll(specification, PageRequest.of(params.getPageNo(), params.getPageSize(), params.getSort()));
 

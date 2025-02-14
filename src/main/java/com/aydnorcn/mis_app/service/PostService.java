@@ -56,7 +56,7 @@ public class PostService {
             throw new NoAuthorityException(MessageConstants.UNAUTHORIZED_ACTION);
         }
 
-        Specification<Post> specification = PostFilter.filter(user, category, params.getStatusList(), params.getCreateAfter(), params.getCreateBefore());
+        Specification<Post> specification = PostFilter.filter(user, category, params.getStatusList(), params.getCreatedDateRangeParams().getCreatedAfter(), params.getCreatedDateRangeParams().getCreatedBefore());
 
         Page<Post> page = postRepository.findAll(specification, PageRequest.of(params.getPageNo(), params.getPageSize(), params.getSort()));
 
