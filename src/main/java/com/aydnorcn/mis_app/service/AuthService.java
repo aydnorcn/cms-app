@@ -9,7 +9,6 @@ import com.aydnorcn.mis_app.entity.User;
 import com.aydnorcn.mis_app.entity.UserCredential;
 import com.aydnorcn.mis_app.exception.AlreadyExistsException;
 import com.aydnorcn.mis_app.jwt.JwtTokenProvider;
-import com.aydnorcn.mis_app.repository.RoleRepository;
 import com.aydnorcn.mis_app.repository.UserRepository;
 import com.aydnorcn.mis_app.utils.MessageConstants;
 import lombok.RequiredArgsConstructor;
@@ -30,12 +29,9 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
-
     private final PasswordEncoder passwordEncoder;
-
     private final AuthenticationManager authenticationManager;
-
-    private final RoleRepository roleRepository;
+    private final RoleService roleService;
     private final RefreshTokenService refreshTokenService;
 
     public LoginResponse login(LoginRequest request) {
@@ -56,8 +52,7 @@ public class AuthService {
         if (userRepository.existsByUserCredentialEmail(request.getEmail())) {
             throw new AlreadyExistsException(MessageConstants.EMAIL_ALREADY_EXISTS);
         }
-
-        Role role = roleRepository.findByName("ROLE_USER").orElseGet(() -> roleRepository.save(new Role("ROLE_USER")));
+        Role role = roleService.getRoleByName("USER");
 
         Set<Role> roles = new HashSet<>(Set.of(role));
 
