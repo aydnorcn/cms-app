@@ -67,16 +67,16 @@ public class AssignmentController {
     @Parameters({
             @Parameter(name = "page-no", in = ParameterIn.QUERY, description = "Page number", schema = @Schema(type = "integer")),
             @Parameter(name = "page-size", in = ParameterIn.QUERY, description = "Page size", schema = @Schema(type = "integer")),
-            @Parameter(name = "sort-by", description = "Sort by", in = ParameterIn.QUERY),
-            @Parameter(name = "sort-order", description = "Sort order", in = ParameterIn.QUERY),
-            @Parameter(name = "assigned-to", description = "Assigned to", in = ParameterIn.QUERY),
-            @Parameter(name = "event-id", description = "Event id", in = ParameterIn.QUERY),
-            @Parameter(name = "is-completed", description = "Is assignment completed?", in = ParameterIn.QUERY),
-            @Parameter(name = "min-priority", description = "Min priority of assignment", in = ParameterIn.QUERY),
-            @Parameter(name = "max-priority", description = "Max priority of assignment", in = ParameterIn.QUERY),
-            @Parameter(name = "created-after", description = "Assignment(s) created after", in = ParameterIn.QUERY),
-            @Parameter(name = "created-before", description = "Assignment(s) created before", in = ParameterIn.QUERY),
-            @Parameter(name = "created-by", description = "Assignment(s) created by", in = ParameterIn.QUERY),
+            @Parameter(name = "sort-by", description = "Sort by", in = ParameterIn.QUERY, schema = @Schema(type = "string")),
+            @Parameter(name = "sort-order", description = "Sort order", in = ParameterIn.QUERY, schema = @Schema(type = "string", allowableValues = {"asc", "desc"})),
+            @Parameter(name = "assigned-to", description = "Assigned to", in = ParameterIn.QUERY, schema = @Schema(type = "string")),
+            @Parameter(name = "event-id", description = "Event id", in = ParameterIn.QUERY, schema = @Schema(type = "string")),
+            @Parameter(name = "is-completed", description = "Is assignment completed?", in = ParameterIn.QUERY, schema = @Schema(type = "boolean")),
+            @Parameter(name = "min-priority", description = "Min priority of assignment", in = ParameterIn.QUERY, schema = @Schema(type = "integer")),
+            @Parameter(name = "max-priority", description = "Max priority of assignment", in = ParameterIn.QUERY, schema = @Schema(type = "integer")),
+            @Parameter(name = "created-after", description = "Assignment(s) created after", in = ParameterIn.QUERY, schema = @Schema(type = "string", format = "date-time"), example = "2021.01.01 00:00"),
+            @Parameter(name = "created-before", description = "Assignment(s) created before", in = ParameterIn.QUERY, schema = @Schema(type = "string", format = "date-time"), example = "2021.01.01 00:00"),
+            @Parameter(name = "created-by", description = "Assignment(s) created by", in = ParameterIn.QUERY, schema = @Schema(type = "string")),
 
     })
     @GetMapping

@@ -61,13 +61,12 @@ public class EventRegistrationController {
             }
     )
     @Parameters({
-            @Parameter(name = "page-no", description = "Page number", in = ParameterIn.QUERY),
-            @Parameter(name = "page-size", description = "Page size", in = ParameterIn.QUERY),
-            @Parameter(name = "sort-by", description = "Sort by", in = ParameterIn.QUERY),
-            @Parameter(name = "sort-order", description = "Sort order", in = ParameterIn.QUERY),
-            @Parameter(name = "event-id", description = "Event id", in = ParameterIn.QUERY),
-            @Parameter(name = "user-id", description = "User id", in = ParameterIn.QUERY),
-            @Parameter(name = "status", description = "Status", in = ParameterIn.QUERY),
+            @Parameter(name = "page-no", description = "Page number", in = ParameterIn.QUERY, schema = @Schema(type = "integer")),
+            @Parameter(name = "page-size", description = "Page size", in = ParameterIn.QUERY, schema = @Schema(type = "integer")),
+            @Parameter(name = "sort-by", description = "Sort by", in = ParameterIn.QUERY, schema = @Schema(type = "string")),
+            @Parameter(name = "sort-order", description = "Sort order", in = ParameterIn.QUERY, schema = @Schema(type = "string", allowableValues = {"asc", "desc"})),
+            @Parameter(name = "event-id", description = "Event id", in = ParameterIn.QUERY, schema = @Schema(type = "string")),
+            @Parameter(name = "user-id", description = "User id", in = ParameterIn.QUERY, schema = @Schema(type = "string")),
     })
     @GetMapping
     public ResponseEntity<APIResponse<PageResponseDto<EventRegistrationResponse>>> getEventRegistrations(@RequestParam(required = false) Map<String, Object> searchParams) {

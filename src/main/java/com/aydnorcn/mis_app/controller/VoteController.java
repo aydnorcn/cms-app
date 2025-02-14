@@ -64,16 +64,16 @@ public class VoteController {
             }
     )
     @Parameters({
-            @Parameter(name = "page-no", description = "Page number", in = ParameterIn.QUERY),
-            @Parameter(name = "page-size", description = "Page size", in = ParameterIn.QUERY),
-            @Parameter(name = "sort-by", description = "Sort by", in = ParameterIn.QUERY),
-            @Parameter(name = "sort-order", description = "Sort order", in = ParameterIn.QUERY),
-            @Parameter(name = "poll-id", description = "Poll id", in = ParameterIn.QUERY),
-            @Parameter(name = "option-id", description = "Option id", in = ParameterIn.QUERY),
-            @Parameter(name = "user-id", description = "User id", in = ParameterIn.QUERY),
-            @Parameter(name = "created-after", description = "Created after", in = ParameterIn.QUERY),
-            @Parameter(name = "created-before", description = "Created before", in = ParameterIn.QUERY),
-            @Parameter(name = "is-active", description = "Is voted poll active?", in = ParameterIn.QUERY),
+            @Parameter(name = "page-no", description = "Page number", in = ParameterIn.QUERY, schema = @Schema(type = "integer")),
+            @Parameter(name = "page-size", description = "Page size", in = ParameterIn.QUERY, schema = @Schema(type = "integer")),
+            @Parameter(name = "sort-by", description = "Sort by", in = ParameterIn.QUERY, schema = @Schema(type = "string")),
+            @Parameter(name = "sort-order", description = "Sort order", in = ParameterIn.QUERY, schema = @Schema(type = "string", allowableValues = {"asc", "desc"})),
+            @Parameter(name = "poll-id", description = "Poll id", in = ParameterIn.QUERY, schema = @Schema(type = "string")),
+            @Parameter(name = "option-id", description = "Option id", in = ParameterIn.QUERY, schema = @Schema(type = "string")),
+            @Parameter(name = "user-id", description = "User id", in = ParameterIn.QUERY, schema = @Schema(type = "string")),
+            @Parameter(name = "created-after", description = "Created after", in = ParameterIn.QUERY, schema = @Schema(type = "string", format = "date-time"), example = "2021.01.01 00:00"),
+            @Parameter(name = "created-before", description = "Created before", in = ParameterIn.QUERY, schema = @Schema(type = "string", format = "date-time"), example = "2021.01.01 00:00"),
+            @Parameter(name = "is-active", description = "Is voted poll active?", in = ParameterIn.QUERY, schema = @Schema(type = "boolean")),
     })
     @GetMapping
     public ResponseEntity<APIResponse<PageResponseDto<VoteResponse>>> getVotes(@RequestParam(required = false) Map<String, Object> searchParams) {

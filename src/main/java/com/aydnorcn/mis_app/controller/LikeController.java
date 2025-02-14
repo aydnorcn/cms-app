@@ -59,8 +59,8 @@ public class LikeController {
             }
     )
     @Parameters({
-            @Parameter(name = "page-no", description = "Page number", in = ParameterIn.QUERY),
-            @Parameter(name = "page-size", description = "Page size", in = ParameterIn.QUERY),
+            @Parameter(name = "page-no", description = "Page number", in = ParameterIn.QUERY, schema = @Schema(type = "integer")),
+            @Parameter(name = "page-size", description = "Page size", in = ParameterIn.QUERY, schema = @Schema(type = "integer")),
     })
     @GetMapping("/posts/{postId}")
     public ResponseEntity<APIResponse<PageResponseDto<LikeResponse>>> getLikeByPostId(@PathVariable String postId,

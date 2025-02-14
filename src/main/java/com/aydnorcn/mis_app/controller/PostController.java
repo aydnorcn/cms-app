@@ -65,15 +65,15 @@ public class PostController {
             }
     )
     @Parameters({
-            @Parameter(name = "page-no", description = "Page number", in = ParameterIn.QUERY),
-            @Parameter(name = "page-size", description = "Page size", in = ParameterIn.QUERY),
-            @Parameter(name = "sort-by", description = "Sort by", in = ParameterIn.QUERY),
-            @Parameter(name = "sort-order", description = "Sort order", in = ParameterIn.QUERY),
-            @Parameter(name = "author", description = "Author of post", in = ParameterIn.QUERY),
-            @Parameter(name = "category", description = "Category of post", in = ParameterIn.QUERY),
-            @Parameter(name = "status", description = "Status(es) of post(s)", in = ParameterIn.QUERY),
-            @Parameter(name = "created-after", description = "Post created after given date", in = ParameterIn.QUERY),
-            @Parameter(name = "created-before", description = "Sort created before given date", in = ParameterIn.QUERY),
+            @Parameter(name = "page-no", description = "Page number", in = ParameterIn.QUERY, schema = @Schema(type = "integer")),
+            @Parameter(name = "page-size", description = "Page size", in = ParameterIn.QUERY, schema = @Schema(type = "integer")),
+            @Parameter(name = "sort-by", description = "Sort by", in = ParameterIn.QUERY, schema = @Schema(type = "string")),
+            @Parameter(name = "sort-order", description = "Sort order", in = ParameterIn.QUERY, schema = @Schema(type = "string", allowableValues = {"asc", "desc"})),
+            @Parameter(name = "author", description = "Author of post", in = ParameterIn.QUERY, schema = @Schema(type = "string")),
+            @Parameter(name = "category", description = "Category of post", in = ParameterIn.QUERY, schema = @Schema(type = "string")),
+            @Parameter(name = "status", description = "Status(es) of post(s)", in = ParameterIn.QUERY, schema = @Schema(type = "string", allowableValues = {"APPROVED", "PENDING", "REJECTED"})),
+            @Parameter(name = "created-after", description = "Post created after given date", in = ParameterIn.QUERY, schema = @Schema(type = "string", format = "date-time"), example = "2021.12.01 00:00"),
+            @Parameter(name = "created-before", description = "Sort created before given date", in = ParameterIn.QUERY, schema = @Schema(type = "string", format = "date-time"), example = "2021.12.01 00:00")
     })
     @GetMapping
     public ResponseEntity<APIResponse<PageResponseDto<PostResponse>>> getPosts(@RequestParam(required = false) Map<String, Object> searchParams) {
