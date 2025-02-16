@@ -47,23 +47,24 @@ The application follows a layered architecture with the following main component
     cd cms-app
     ```
 
-2. Install the dependencies:
-    ```sh
-    mvn clean install
-    ```
-
-3. Configure the database:
+2. Configure the database:
     - Update the `env.properties` file with your PostgreSQL database credentials and JWT key.
 
 
-4. Run the application:
+3. Run the application with docker:
     ```sh
-    mvn spring-boot:run
+    docker-compose up -d
     ```
 
 ## Usage
 
 To use the application, you can send HTTP requests to the endpoints defined in the controllers. You can use tools like Postman or cURL to interact with the API.
+
+Also you can check below website for documentation page.
+
+```
+http://localhost:8080/swagger-ui/index.html
+```
 
 ### Authentication
 
